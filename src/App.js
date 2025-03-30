@@ -4,11 +4,13 @@ import { useEffect, useState } from 'react';
 import * as THREE from "three";
 
 function Box({ position }) {
-  const colorMap = useLoader(THREE.TextureLoader, "/image/textures/ground/Marble015_2K-JPG_Color.jpg");
-  const normalMap = useLoader(THREE.TextureLoader, "/image/textures/ground/Marble015_2K-JPG_NormalGL.jpg");
-  const roughnessMap = useLoader(THREE.TextureLoader, "/image/textures/ground/Marble015_2K-JPG_Roughness.jpg");
+  // const colorMap = useLoader(THREE.TextureLoader, "/image/textures/ground/Marble015_2K-JPG_Color.jpg");
+  // const normalMap = useLoader(THREE.TextureLoader, "/image/textures/ground/Marble015_2K-JPG_NormalGL.jpg");
+  // const roughnessMap = useLoader(THREE.TextureLoader, "/image/textures/ground/Marble015_2K-JPG_Roughness.jpg");
 
-  
+  const colorMap = useLoader(THREE.TextureLoader, "/image/textures/floor/Marble003_2K-JPG_Color.jpg");
+  const normalMap = useLoader(THREE.TextureLoader, "/image/textures/floor/Marble003_2K-JPG_NormalGL.jpg");
+  const roughnessMap = useLoader(THREE.TextureLoader, "/image/textures/floor/Marble003_2K-JPG_Roughness.jpg");
 
   return (
     <mesh position={position}>
