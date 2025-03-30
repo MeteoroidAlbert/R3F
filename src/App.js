@@ -3,23 +3,33 @@ import { OrbitControls } from '@react-three/drei';
 import { useEffect, useState } from 'react';
 import * as THREE from "three";
 
-function Box({ position }) {
+function Box({ type }) {
   // const colorMap = useLoader(THREE.TextureLoader, "/image/textures/ground/Marble015_2K-JPG_Color.jpg");
   // const normalMap = useLoader(THREE.TextureLoader, "/image/textures/ground/Marble015_2K-JPG_NormalGL.jpg");
   // const roughnessMap = useLoader(THREE.TextureLoader, "/image/textures/ground/Marble015_2K-JPG_Roughness.jpg");
 
-  const colorMap = useLoader(THREE.TextureLoader, "/image/textures/floor/Marble003_2K-JPG_Color.jpg");
-  const normalMap = useLoader(THREE.TextureLoader, "/image/textures/floor/Marble003_2K-JPG_NormalGL.jpg");
-  const roughnessMap = useLoader(THREE.TextureLoader, "/image/textures/floor/Marble003_2K-JPG_Roughness.jpg");
+  const floorMap = useLoader(THREE.TextureLoader, "/image/textures/floor/Travertine009_4K-JPG_Color.jpg");
+  const wallMap = useLoader(THREE.TextureLoader, "/image/textures/wall/Concrete017_4K-JPG_Color.jpg");
+  let position;
+  let args;
+  if (type === "floor") {
+    position = [10, 0, 10];
+    args = [20, 1, 20];
+  }
+  if (type === "wall_xy") {
+    position = [10, 6 , 0.5]
+    args = [20, 11, 1];
+  }
+  if (type === "wall_yz") {
+    position = [0.5, 6, 10]
+    args = [1, 11, 20]
+  }
 
   return (
-    <mesh position={position}>
-      <boxGeometry args={[1, 1, 1]} />
+    <mesh position={position} >
+      <boxGeometry args={args} />
       <meshStandardMaterial 
-        map={colorMap} // 主顏色
-        normalMap={normalMap} // 法線貼圖
-        roughnessMap={roughnessMap} // 粗糙度貼圖
-        roughness={0.5} // 粗糙度的全局設置
+        map={ type === "floor" ? floorMap : wallMap} // 主顏色
       />
     </mesh>
   );
@@ -62,9 +72,9 @@ export default function ThreeScene() {
   }
 
   useEffect(() => {
-    build("ground", 20);
-    build("wall_xy", 10);
-    build("wall_yz", 10);
+    // build("ground", 20);
+    // build("wall_xy", 10);
+    // build("wall_yz", 10);
   }, [])
 
   return (
@@ -72,15 +82,18 @@ export default function ThreeScene() {
       <Canvas camera={{ position: [10, 20, 40] }} className="w-full h-full">
         <ambientLight intensity={1.5} /> {/*環境光: 影響畫布明暗*/}
         <directionalLight position={[10, 40, 10]} /> {/*平行光: 如同太陽光，根據光源座標影響陰影方向*/}
-        {s_buiding.ground.map((position, i) =>
-          <Box key={i} position={position} />
+        {/* {s_buiding.ground.map((position, i) =>
+          <Box key={i} position={position} type="floor"/>
         )}
         {s_buiding.wall_xy.map((position, i) =>
-          <Box key={i} position={position} />
+          <Box key={i} position={position} type="wall"/>
         )}
         {s_buiding.wall_yz.map((position, i) =>
-          <Box key={i} position={position} />
-        )}
+          <Box key={i} position={position} type="wall" />
+        )} */}
+        <Box type="floor"/>
+        <Box type="wall_xy"/>
+        <Box type="wall_yz"/>
         <OrbitControls target={[2.5, 0, 2.5]} /> {/*控制相機在球軌道上的位置*/}
         <primitive object={new THREE.AxesHelper(50)} /> {/*primitive: 在React元件中直接使用Three.js實例*/}
       </Canvas>
