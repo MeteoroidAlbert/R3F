@@ -1,14 +1,20 @@
 import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
+import { useDrag } from '@use-gesture/react';
 import { useEffect, useState } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from "three";
 
 function AGV() {
+  const [s_position, set_s_position] = useState([10, 0.5, 16])
   const {scene} = useGLTF("/modal/AGV/scene.gltf");
-  scene.scale.set(0.01, 0.01, 0.01);
-  scene.position.set(10, 0.5, 16);
-  return <primitive object={scene}/>
+  
+  // 使用 useDrag 來改變模型位置
+  const bind = useDrag(({ offset: [x, y] }) => {
+    set_s_position([x / 50, 0, -y / 50]); // 除以 50 是為了調整拖動靈敏度
+  });
+
+  return <primitive object={scene} position={s_position} scale={[0.01, 0.01, 0.01]} {...bind()}/>
 }
 
 function Shelf_1 () {
