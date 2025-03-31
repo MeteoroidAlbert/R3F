@@ -1,7 +1,22 @@
 import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { useEffect, useState } from 'react';
+import { useGLTF } from '@react-three/drei';
 import * as THREE from "three";
+
+function AGV() {
+  const {scene} = useGLTF("/modal/AGV/scene.gltf");
+  scene.scale.set(0.01, 0.01, 0.01);
+  scene.position.set(10, 0.5, 16);
+  return <primitive object={scene}/>
+}
+
+function Shelf_1 () {
+  const {scene} = useGLTF("/modal/shelf/shelf_1/scene.gltf");
+  scene.scale.set(2.5, 2.5, 2.5);
+  scene.position.set(8, 0.5, 3)
+  return <primitive object={scene}/>;
+}
 
 function Box({ type }) {
   // const colorMap = useLoader(THREE.TextureLoader, "/image/textures/ground/Marble015_2K-JPG_Color.jpg");
@@ -79,7 +94,7 @@ export default function ThreeScene() {
 
   return (
     <div className="w-full h-screen bg-black">
-      <Canvas camera={{ position: [10, 20, 40] }} className="w-full h-full">
+      <Canvas camera={{ position: [10, 80, 40] }} className="w-full h-full">
         <ambientLight intensity={1.5} /> {/*環境光: 影響畫布明暗*/}
         <directionalLight position={[10, 40, 10]} /> {/*平行光: 如同太陽光，根據光源座標影響陰影方向*/}
         {/* {s_buiding.ground.map((position, i) =>
@@ -94,6 +109,8 @@ export default function ThreeScene() {
         <Box type="floor"/>
         <Box type="wall_xy"/>
         <Box type="wall_yz"/>
+        <AGV/>
+        <Shelf_1/>
         <OrbitControls target={[2.5, 0, 2.5]} /> {/*控制相機在球軌道上的位置*/}
         <primitive object={new THREE.AxesHelper(50)} /> {/*primitive: 在React元件中直接使用Three.js實例*/}
       </Canvas>

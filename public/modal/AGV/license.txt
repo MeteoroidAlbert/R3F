@@ -1,0 +1,11 @@
+Model Information:
+* title:	AGV - MaxMover : Fork Over Leg
+* source:	https://sketchfab.com/3d-models/agv-maxmover-fork-over-leg-8fae5a5e58dc4d92ae5ba9c501d68ccd
+* author:	OIIgraphics (https://sketchfab.com/itcgraphics1)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "AGV - MaxMover : Fork Over Leg" (https://sketchfab.com/3d-models/agv-maxmover-fork-over-leg-8fae5a5e58dc4d92ae5ba9c501d68ccd) by OIIgraphics (https://sketchfab.com/itcgraphics1) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
