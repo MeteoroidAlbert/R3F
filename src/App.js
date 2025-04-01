@@ -1,102 +1,100 @@
 import { Canvas, useLoader, useThree, useFrame } from '@react-three/fiber';
-import { Html, OrbitControls } from '@react-three/drei';
-import { useDrag } from '@use-gesture/react';
+import { Gltf, Html, OrbitControls } from '@react-three/drei';
 import { useEffect, useRef, useState } from 'react';
-import { useGLTF } from '@react-three/drei';
 import * as THREE from "three";
 import { Form, Table } from 'antd';
 
 
 const tableColumns = [
   {
-      title: "良率黃燈警報(%)",
-      dataIndex: "warnyield",
-      align: "right",
-      width: 130
+    title: "良率黃燈警報(%)",
+    dataIndex: "warnyield",
+    align: "right",
+    width: 130
   },
   {
-      title: "良率紅燈警報(%)",
-      dataIndex: "alertyield",
-      align: "right",
-      width: 130
+    title: "良率紅燈警報(%)",
+    dataIndex: "alertyield",
+    align: "right",
+    width: 130
   },
   {
-      title: "產速報警(%)",
-      dataIndex: "alertspeed",
-      align: "right",
-      width: 120
+    title: "產速報警(%)",
+    dataIndex: "alertspeed",
+    align: "right",
+    width: 120
   },
   {
-      title: "逾停警報(SEC)",
-      dataIndex: "alertstop",
-      align: "right",
-      width: 120
+    title: "逾停警報(SEC)",
+    dataIndex: "alertstop",
+    align: "right",
+    width: 120
   },
   {
-      title: "投料耗損率(%)",
-      dataIndex: "lossR",
-      align: "right",
-      width: 120,
+    title: "投料耗損率(%)",
+    dataIndex: "lossR",
+    align: "right",
+    width: 120,
   },
   {
-      title: "良率損耗率(%)",
-      dataIndex: "yieldR",
-      align: "right",
-      width: 120,
+    title: "良率損耗率(%)",
+    dataIndex: "yieldR",
+    align: "right",
+    width: 120,
   },
   {
-      title: "生產準備時間(LT)",
-      dataIndex: "pdtLT",
-      align: "right",
-      width: 180,
+    title: "生產準備時間(LT)",
+    dataIndex: "pdtLT",
+    align: "right",
+    width: 180,
   },
   {
-      title: "作業緩衝時間(WT)",
-      dataIndex: "pdtWT",
-      align: "right",
-      width: 180,
+    title: "作業緩衝時間(WT)",
+    dataIndex: "pdtWT",
+    align: "right",
+    width: 180,
   },
   {
-      title: "投料單重",
-      dataIndex: "feedinwt",
-      align: "right",
-      width: 120,
+    title: "投料單重",
+    dataIndex: "feedinwt",
+    align: "right",
+    width: 120,
   },
   {
-      title: "產出單重",
-      dataIndex: "outputwt",
-      align: "right",
-      width: 120,
+    title: "產出單重",
+    dataIndex: "outputwt",
+    align: "right",
+    width: 120,
   },
   {
-      title: "投入計量單位",
-      dataIndex: "feedUOMUID",
-      width: 120,
+    title: "投入計量單位",
+    dataIndex: "feedUOMUID",
+    width: 120,
   },
   {
-      title: "投入量",
-      dataIndex: "feedin",
-      align: "right",
-      width: 120,
+    title: "投入量",
+    dataIndex: "feedin",
+    align: "right",
+    width: 120,
   },
   {
-      title: "產出計量單位",
-      dataIndex: "outputUOMUID",
-      width: 120,
+    title: "產出計量單位",
+    dataIndex: "outputUOMUID",
+    width: 120,
   },
   {
-      title: "產出量",
-      dataIndex: "output",
-      align: "right",
-      width: 120,
+    title: "產出量",
+    dataIndex: "output",
+    align: "right",
+    width: 120,
   },
   {
-      title: "註記",
-      dataIndex: "note",
-      width: 120,
-      ellipsis: true,
+    title: "註記",
+    dataIndex: "note",
+    width: 120,
+    ellipsis: true,
   },
-  
+
 ];
 
 const fakeData = [
@@ -117,21 +115,27 @@ const fakeData = [
   }
 ]
 
-function DataTable () {
+function DataTable() {
   return (
     <Html position={[12, 25, 24]} transform occlude>
       <div className="bg-white p-2  overflow-x-auto">
-        <Table columns={tableColumns} dataSource={fakeData}/>
+        <Table columns={tableColumns} dataSource={fakeData} />
       </div>
     </Html>
   )
 }
 
-
-
-function Reactor ({onClick}) {
-  const {scene} = useGLTF("/modal/reactor/scene.gltf");
-  return <primitive object={scene} position={[8.1, -0.4, 6]} scale={[5, 5, 5]} rotation={[0, Math.PI, 0]} onClick={onClick}/>
+function Reactor({ onClick }) {
+  return (
+    <Gltf 
+      src={"/modal/reactor/scene.gltf"} 
+      position={[8.1, -0.4, 6]} scale={[5, 5, 5]} 
+      rotation={[0, Math.PI, 0]} 
+      onClick={onClick} 
+      onPointerOver={() => (document.body.style.cursor = "pointer")}
+      onPointerOut={() => (document.body.style.cursor = "grab")}
+    />
+  )
 }
 
 function Box({ type }) {
@@ -144,7 +148,7 @@ function Box({ type }) {
     args = [200, 1, 200];
   }
   if (type === "wall_xy") {
-    position = [10, 6 , 0.5]
+    position = [10, 6, 0.5]
     args = [20, 11, 1];
   }
   if (type === "wall_yz") {
@@ -155,8 +159,8 @@ function Box({ type }) {
   return (
     <mesh position={position} >
       <boxGeometry args={args} />
-      <meshStandardMaterial 
-        map={ type === "floor" ? floorMap : wallMap} // 主顏色
+      <meshStandardMaterial
+        map={type === "floor" ? floorMap : wallMap} // 主顏色
       />
     </mesh>
   );
@@ -178,7 +182,7 @@ function CameraController({ cameraPosition, orbitTarget, s_islocking }) {
 
 
   useFrame(() => {
-    if (!s_isAnimated) return; 
+    if (!s_isAnimated) return;
 
     camera.position.lerp(cameraPosition, 0.05); // 平滑插值: 每幀畫面使相機向目標位置推進5%
     orbitControlsRef.current.target.lerp(orbitTarget, 0.05); // 使相機看向目標位置推進5%
@@ -188,44 +192,47 @@ function CameraController({ cameraPosition, orbitTarget, s_islocking }) {
     if (camera.position.distanceTo(cameraPosition) < 0.1 && orbitControlsRef.current.target.distanceTo(orbitTarget) < 0.1) {
       camera.position.copy(cameraPosition);
       orbitControlsRef.current.target.copy(orbitTarget);
-      set_s_isAnimated(false); 
+      set_s_isAnimated(false);
     }
   });
 
-  return <OrbitControls ref={orbitControlsRef} enableRotate={!s_islocking}/>;
+  return <OrbitControls ref={orbitControlsRef} enableRotate={!s_islocking} />;
 }
 
 export default function ThreeScene() {
   const [s_isPanelShowing, set_s_isPanelShowing] = useState(false);  // Panel顯示與否
-  const [s_islocking, set_s_islocking] = useState(false); // 
+  const [s_islocking, set_s_islocking] = useState(false);
   const [s_cameraPosition, set_s_cameraPosition] = useState(
     new THREE.Vector3(...positionTarget.default[0])
   );
   const [s_orbitTarget, set_s_orbitTarget] = useState(
     new THREE.Vector3(...positionTarget.default[1])
   );
-  
+
 
   const handlePanelShowing = () => {
     set_s_islocking(prevState => !prevState);
     set_s_cameraPosition(new THREE.Vector3(...positionTarget.reactor[0]));
     set_s_orbitTarget(new THREE.Vector3(...positionTarget.reactor[1]));
-    setTimeout(() => {
-      set_s_isPanelShowing(prevState => !prevState);
-    }, 100)
+    set_s_isPanelShowing(prevState => !prevState);
+
   };
+
+  useEffect(() => {
+    console.log("s_islocking:", s_islocking);
+  }, [s_islocking])
 
   return (
     <div className="w-full h-screen bg-black">
       <Canvas >
         <ambientLight intensity={1.5} />
-        <directionalLight position={[10, 40, 10]} />
+        <directionalLight position={[10, 100, 10]} />
         <Reactor onClick={handlePanelShowing} />
         {s_isPanelShowing && <DataTable />}
-        <Box type="floor"/>
-        <CameraController 
-          cameraPosition={s_cameraPosition} 
-          orbitTarget={s_orbitTarget} 
+        <Box type="floor" />
+        <CameraController
+          cameraPosition={s_cameraPosition}
+          orbitTarget={s_orbitTarget}
           s_islocking={s_islocking}
         />
       </Canvas>
