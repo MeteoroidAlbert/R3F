@@ -1,41 +1,147 @@
-import { Canvas, useLoader } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { Canvas, useLoader, useThree, useFrame } from '@react-three/fiber';
+import { Html, OrbitControls } from '@react-three/drei';
 import { useDrag } from '@use-gesture/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from "three";
+import { Form, Table } from 'antd';
 
-function AGV() {
-  const [s_position, set_s_position] = useState([10, 0.5, 16])
-  const {scene} = useGLTF("/modal/AGV/scene.gltf");
+
+const tableColumns = [
+  {
+      title: "良率黃燈警報(%)",
+      dataIndex: "warnyield",
+      align: "right",
+      width: 130
+  },
+  {
+      title: "良率紅燈警報(%)",
+      dataIndex: "alertyield",
+      align: "right",
+      width: 130
+  },
+  {
+      title: "產速報警(%)",
+      dataIndex: "alertspeed",
+      align: "right",
+      width: 120
+  },
+  {
+      title: "逾停警報(SEC)",
+      dataIndex: "alertstop",
+      align: "right",
+      width: 120
+  },
+  {
+      title: "投料耗損率(%)",
+      dataIndex: "lossR",
+      align: "right",
+      width: 120,
+  },
+  {
+      title: "良率損耗率(%)",
+      dataIndex: "yieldR",
+      align: "right",
+      width: 120,
+  },
+  {
+      title: "生產準備時間(LT)",
+      dataIndex: "pdtLT",
+      align: "right",
+      width: 180,
+  },
+  {
+      title: "作業緩衝時間(WT)",
+      dataIndex: "pdtWT",
+      align: "right",
+      width: 180,
+  },
+  {
+      title: "投料單重",
+      dataIndex: "feedinwt",
+      align: "right",
+      width: 120,
+  },
+  {
+      title: "產出單重",
+      dataIndex: "outputwt",
+      align: "right",
+      width: 120,
+  },
+  {
+      title: "投入計量單位",
+      dataIndex: "feedUOMUID",
+      width: 120,
+  },
+  {
+      title: "投入量",
+      dataIndex: "feedin",
+      align: "right",
+      width: 120,
+  },
+  {
+      title: "產出計量單位",
+      dataIndex: "outputUOMUID",
+      width: 120,
+  },
+  {
+      title: "產出量",
+      dataIndex: "output",
+      align: "right",
+      width: 120,
+  },
+  {
+      title: "註記",
+      dataIndex: "note",
+      width: 120,
+      ellipsis: true,
+  },
   
-  // 使用 useDrag 來改變模型位置
-  const bind = useDrag(({ offset: [x, y] }) => {
-    set_s_position([x / 50, 0, -y / 50]); // 除以 50 是為了調整拖動靈敏度
-  });
+];
 
-  return <primitive object={scene} position={s_position} scale={[0.01, 0.01, 0.01]} {...bind()}/>
+const fakeData = [
+  {
+    warnyield: 90,
+    alertyield: 80,
+    alertspeed: 90,
+    alertstop: 120,
+    lossR: 15,
+    yieldR: 5,
+    pdtLT: 60,
+    feedinwt: 51,
+    feedUOMUID: "kg",
+    feedin: 1000,
+    outputwt: 100,
+    outputUOMUID: "kg",
+    output: 900,
+  }
+]
+
+function DataTable () {
+  return (
+    <Html position={[12, 25, 24]} transform occlude>
+      <div className="bg-white p-2  overflow-x-auto">
+        <Table columns={tableColumns} dataSource={fakeData}/>
+      </div>
+    </Html>
+  )
 }
 
-function Shelf_1 () {
-  const {scene} = useGLTF("/modal/shelf/shelf_1/scene.gltf");
-  scene.scale.set(2.5, 2.5, 2.5);
-  scene.position.set(8, 0.5, 3)
-  return <primitive object={scene}/>;
+
+
+function Reactor ({onClick}) {
+  const {scene} = useGLTF("/modal/reactor/scene.gltf");
+  return <primitive object={scene} position={[8.1, -0.4, 6]} scale={[5, 5, 5]} rotation={[0, Math.PI, 0]} onClick={onClick}/>
 }
 
 function Box({ type }) {
-  // const colorMap = useLoader(THREE.TextureLoader, "/image/textures/ground/Marble015_2K-JPG_Color.jpg");
-  // const normalMap = useLoader(THREE.TextureLoader, "/image/textures/ground/Marble015_2K-JPG_NormalGL.jpg");
-  // const roughnessMap = useLoader(THREE.TextureLoader, "/image/textures/ground/Marble015_2K-JPG_Roughness.jpg");
-
   const floorMap = useLoader(THREE.TextureLoader, "/image/textures/floor/Travertine009_4K-JPG_Color.jpg");
   const wallMap = useLoader(THREE.TextureLoader, "/image/textures/wall/Concrete017_4K-JPG_Color.jpg");
   let position;
   let args;
   if (type === "floor") {
     position = [10, 0, 10];
-    args = [20, 1, 20];
+    args = [200, 1, 200];
   }
   if (type === "wall_xy") {
     position = [10, 6 , 0.5]
@@ -56,72 +162,73 @@ function Box({ type }) {
   );
 }
 
+const positionTarget = {
+  default: [[80, 120, 60], [0, 0, 0]], // 0: cameraPosition, 1: orbitTarget
+  reactor: [[12, 20, 40], [12, 20, 0]]
+};
 
-
-export default function ThreeScene() {
-  // 建築物地面、牆體
-  const [s_buiding, set_s_building] = useState({
-    ground: [],
-    wall_xy: [],
-    wall_yz: []
-  });
-
-  // 構建地面、牆體
-  function build(type, size) {
-    const positions = [];
-    if (type === "ground") {
-      for (let x = 0; x < size; x++) {
-        for (let y = 0; y < size; y++) {
-          positions.push([x, 0, y]);
-        }
-      }
-    }
-    else {
-      for (let x = 0; x < size * 2; x++) {
-        for (let y = 0; y < size; y++) {
-          type === "wall_xy" && positions.push([x, y, 0]);
-          type === "wall_yz" && positions.push([0, y, x]);
-        }
-      }
-    }
-
-    set_s_building(prevState => ({
-      ...prevState,
-      [type]: positions
-    }))
-
-  }
+function CameraController({ cameraPosition, orbitTarget, s_islocking }) {
+  const { camera } = useThree();
+  const orbitControlsRef = useRef();
+  const [s_isAnimated, set_s_isAnimated] = useState(false) // 控制是否啟用相機轉移時的動畫
 
   useEffect(() => {
-    // build("ground", 20);
-    // build("wall_xy", 10);
-    // build("wall_yz", 10);
-  }, [])
+    set_s_isAnimated(true);
+  }, [cameraPosition, orbitTarget]);
+
+
+  useFrame(() => {
+    if (!s_isAnimated) return; 
+
+    camera.position.lerp(cameraPosition, 0.05); // 平滑插值: 每幀畫面使相機向目標位置推進5%
+    orbitControlsRef.current.target.lerp(orbitTarget, 0.05); // 使相機看向目標位置推進5%
+    orbitControlsRef.current.update();
+
+    // 當相機到達指定位置必須停止動畫
+    if (camera.position.distanceTo(cameraPosition) < 0.1 && orbitControlsRef.current.target.distanceTo(orbitTarget) < 0.1) {
+      camera.position.copy(cameraPosition);
+      orbitControlsRef.current.target.copy(orbitTarget);
+      set_s_isAnimated(false); 
+    }
+  });
+
+  return <OrbitControls ref={orbitControlsRef} enableRotate={!s_islocking}/>;
+}
+
+export default function ThreeScene() {
+  const [s_isPanelShowing, set_s_isPanelShowing] = useState(false);  // Panel顯示與否
+  const [s_islocking, set_s_islocking] = useState(false); // 
+  const [s_cameraPosition, set_s_cameraPosition] = useState(
+    new THREE.Vector3(...positionTarget.default[0])
+  );
+  const [s_orbitTarget, set_s_orbitTarget] = useState(
+    new THREE.Vector3(...positionTarget.default[1])
+  );
+  
+
+  const handlePanelShowing = () => {
+    set_s_islocking(prevState => !prevState);
+    set_s_cameraPosition(new THREE.Vector3(...positionTarget.reactor[0]));
+    set_s_orbitTarget(new THREE.Vector3(...positionTarget.reactor[1]));
+    setTimeout(() => {
+      set_s_isPanelShowing(prevState => !prevState);
+    }, 100)
+  };
 
   return (
     <div className="w-full h-screen bg-black">
-      <Canvas camera={{ position: [10, 80, 40] }} className="w-full h-full">
-        <ambientLight intensity={1.5} /> {/*環境光: 影響畫布明暗*/}
-        <directionalLight position={[10, 40, 10]} /> {/*平行光: 如同太陽光，根據光源座標影響陰影方向*/}
-        {/* {s_buiding.ground.map((position, i) =>
-          <Box key={i} position={position} type="floor"/>
-        )}
-        {s_buiding.wall_xy.map((position, i) =>
-          <Box key={i} position={position} type="wall"/>
-        )}
-        {s_buiding.wall_yz.map((position, i) =>
-          <Box key={i} position={position} type="wall" />
-        )} */}
+      <Canvas >
+        <ambientLight intensity={1.5} />
+        <directionalLight position={[10, 40, 10]} />
+        <Reactor onClick={handlePanelShowing} />
+        {s_isPanelShowing && <DataTable />}
         <Box type="floor"/>
-        <Box type="wall_xy"/>
-        <Box type="wall_yz"/>
-        <AGV/>
-        <Shelf_1/>
-        <OrbitControls target={[2.5, 0, 2.5]} /> {/*控制相機在球軌道上的位置*/}
-        <primitive object={new THREE.AxesHelper(50)} /> {/*primitive: 在React元件中直接使用Three.js實例*/}
+        <CameraController 
+          cameraPosition={s_cameraPosition} 
+          orbitTarget={s_orbitTarget} 
+          s_islocking={s_islocking}
+        />
       </Canvas>
     </div>
-
-
   );
 }
