@@ -141,6 +141,11 @@ const tableColumns_mixer = [
         title: "TEST4",
         dataIndex: "test4",
         width: 120,
+    },
+    {
+        title: "TEST5",
+        dataIndex: "test5",
+        width: 120,
     }
 ]
 
@@ -149,7 +154,8 @@ const fakeData_mixer = [
         test1: "1",
         test2: "2",
         test3: "3",
-        test4: "4"
+        test4: "4",
+        test5: "5",
     }
 ]
 
