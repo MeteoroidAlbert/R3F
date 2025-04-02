@@ -14,18 +14,30 @@ export default function Box({ type, position, args }) {
             "/image/textures/floor/concrete/vermond_grey-2K/2K-vermond_grey-normal.jpg", // normalMap
             null,
         ],
-        wall: [
+        wall_concrete: [
             "/image/textures/wall/concrete/seamless_concrete_48-2K/2K-concrete_48_Base Color.jpg", // diffuseMap
             "/image/textures/wall/concrete/seamless_concrete_48-2K/2K-concrete_48_Height.jpg", // displacementMap
             "/image/textures/wall/concrete/seamless_concrete_48-2K/2K-concrete_48_Normal.jpg", // normalMap
             "/image/textures/wall/concrete/seamless_concrete_48-2K/2K-concrete_48_Roughness.jpg", // roughnessMap
+
         ],
+        wall_paper: [
+            "/image/textures/wall/wallpaper/wallpaper_38-2K/2K-wallpaper_38_basecolor.png",  // diffuseMap
+            "/image/textures/wall/wallpaper/wallpaper_38-2K/2K-wallpaper_38_height.png", // displacementMap
+            "/image/textures/wall/wallpaper/wallpaper_38-2K/2K-wallpaper_38_normal.png", // normalMap
+            "/image/textures/wall/wallpaper/wallpaper_38-2K/2K-wallpaper_38_roughness.png", //  roughnessMap
+        ],
+        wall_marble: [
+            "/image/textures/wall/marble/king_white_marble-2K/king_white_-_polished_-_marble-diffuse-2K.png",
+            "/image/textures/wall/marble/king_white_marble-2K/king_white_-_polished_-_marble-displacement-2K.png",
+            "/image/textures/wall/marble/king_white_marble-2K/king_white_-_polished_-_marble-normal-2K.png",
+            "/image/textures/wall/marble/king_white_marble-2K/king_white_-_polished_-_marble-specular-2K.png",
+        ]
     }
 
     const validTextures = textures[type].filter(texture => texture !== null && texture !== undefined);
-
-
     const [diffuseMap, displacementMap, normalMap, roughnessMap] = useLoader(THREE.TextureLoader, validTextures);
+    const color = type === "floor_1" ? 0x3cb371 : 0xFFFFFF;
 
 
 
@@ -35,12 +47,13 @@ export default function Box({ type, position, args }) {
         <mesh position={position} >
             <boxGeometry args={args} />
             <meshStandardMaterial
+                color={color}
                 map={diffuseMap}           // 基礎顏色
                 displacementMap={displacementMap}
                 displacementScale={0.1}    // 置換高度
                 normalMap={normalMap}      // 法線
                 roughnessMap={roughnessMap}  // 粗糙度
-                roughness={0.7}            // 控制粗糙度
+                roughness={type === "floor_1" ? 0.3 : 0.5}            // 控制粗糙度
             />
         </mesh>
     );
