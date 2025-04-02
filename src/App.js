@@ -3,6 +3,10 @@ import { Gltf, Html, OrbitControls } from '@react-three/drei';
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from "three";
 import { Form, Table } from 'antd';
+import Box from './Modal/Box';
+import Reactor from './Modal/Reactor';
+import CameraController from './Modal/CameraController';
+import Mixer from './Modal/Mixer';
 
 
 const tableColumns = [
@@ -117,7 +121,7 @@ const fakeData = [
 
 function DataTable() {
   return (
-    <Html position={[12, 25, 24]} transform occlude>
+    <Html position={[-40, 25, -20]} rotation={[0, Math.PI / 2, 0]} transform occlude>
       <div className="bg-white p-2  overflow-x-auto">
         <Table columns={tableColumns} dataSource={fakeData} />
       </div>
@@ -125,83 +129,20 @@ function DataTable() {
   )
 }
 
-function Reactor({ onClick }) {
-  return (
-    <Gltf 
-      src={"/modal/reactor/scene.gltf"} 
-      position={[8.1, -0.4, 6]} scale={[5, 5, 5]} 
-      rotation={[0, Math.PI, 0]} 
-      onClick={onClick} 
-      onPointerOver={() => (document.body.style.cursor = "pointer")}
-      onPointerOut={() => (document.body.style.cursor = "grab")}
-    />
-  )
-}
-
-function Box({ type }) {
-  const floorMap = useLoader(THREE.TextureLoader, "/image/textures/floor/Travertine009_4K-JPG_Color.jpg");
-  const wallMap = useLoader(THREE.TextureLoader, "/image/textures/wall/Concrete017_4K-JPG_Color.jpg");
-  let position;
-  let args;
-  if (type === "floor") {
-    position = [10, 0, 10];
-    args = [200, 1, 200];
-  }
-  if (type === "wall_xy") {
-    position = [10, 6, 0.5]
-    args = [20, 11, 1];
-  }
-  if (type === "wall_yz") {
-    position = [0.5, 6, 10]
-    args = [1, 11, 20]
-  }
-
-  return (
-    <mesh position={position} >
-      <boxGeometry args={args} />
-      <meshStandardMaterial
-        map={type === "floor" ? floorMap : wallMap} // 主顏色
-      />
-    </mesh>
-  );
-}
 
 const positionTarget = {
   default: [[80, 120, 60], [0, 0, 0]], // 0: cameraPosition, 1: orbitTarget
-  reactor: [[12, 20, 40], [12, 20, 0]]
+  reactor: [[-20, 20, -20], [-50, 20, -20]],
+  mixer: [[0, 5, -55], [0, 5, -70]]
 };
 
-function CameraController({ cameraPosition, orbitTarget, s_islocking }) {
-  const { camera } = useThree();
-  const orbitControlsRef = useRef();
-  const [s_isAnimated, set_s_isAnimated] = useState(false) // 控制是否啟用相機轉移時的動畫
 
-  useEffect(() => {
-    set_s_isAnimated(true);
-  }, [cameraPosition, orbitTarget]);
-
-
-  useFrame(() => {
-    if (!s_isAnimated) return;
-
-    camera.position.lerp(cameraPosition, 0.05); // 平滑插值: 每幀畫面使相機向目標位置推進5%
-    orbitControlsRef.current.target.lerp(orbitTarget, 0.05); // 使相機看向目標位置推進5%
-    orbitControlsRef.current.update();
-
-    // 當相機到達指定位置必須停止動畫
-    if (camera.position.distanceTo(cameraPosition) < 0.1 && orbitControlsRef.current.target.distanceTo(orbitTarget) < 0.1) {
-      camera.position.copy(cameraPosition);
-      orbitControlsRef.current.target.copy(orbitTarget);
-      set_s_isAnimated(false);
-    }
-  });
-
-  return <OrbitControls ref={orbitControlsRef} enableRotate={!s_islocking} />;
-}
 
 export default function ThreeScene() {
-  const [s_isPanelShowing, set_s_isPanelShowing] = useState(false);  // Panel顯示與否
+  const [s_isShowing_reactor, set_s_isShowing_reactor] = useState(false);  // Panel_ractor顯示與否
+  const [s_isShowing_mixer, set_s_isShowing_mixer] = useState(false);  // Panel_mixer顯示與否
   const [s_islocking, set_s_islocking] = useState(false);
+  const [s_selectedObj, set_s_selectedObj] = useState(undefined);
   const [s_cameraPosition, set_s_cameraPosition] = useState(
     new THREE.Vector3(...positionTarget.default[0])
   );
@@ -210,31 +151,48 @@ export default function ThreeScene() {
   );
 
 
-  const handlePanelShowing = () => {
+  const handlePanelShowing = (type) => {
     set_s_islocking(prevState => !prevState);
-    set_s_cameraPosition(new THREE.Vector3(...positionTarget.reactor[0]));
-    set_s_orbitTarget(new THREE.Vector3(...positionTarget.reactor[1]));
-    set_s_isPanelShowing(prevState => !prevState);
-
+    set_s_selectedObj(prev => prev === type ? undefined : type);
+    type === "reactor" && set_s_isShowing_reactor(prev => !prev);
+    type === "mixer" && set_s_isShowing_mixer(prev => !prev);
   };
 
   useEffect(() => {
     console.log("s_islocking:", s_islocking);
-  }, [s_islocking])
+    if (s_islocking && s_selectedObj) {
+      set_s_cameraPosition(new THREE.Vector3(...positionTarget[s_selectedObj][0]));
+      set_s_orbitTarget(new THREE.Vector3(...positionTarget[s_selectedObj][1]));
+    }
+    else {
+      set_s_cameraPosition(new THREE.Vector3(...positionTarget.default[0]));
+      set_s_orbitTarget(new THREE.Vector3(...positionTarget.default[1]));
+    }
+  }, [s_islocking, s_selectedObj])
 
   return (
     <div className="w-full h-screen bg-black">
       <Canvas >
+        {/*光源*/}
         <ambientLight intensity={1.5} />
         <directionalLight position={[10, 100, 10]} />
-        <Reactor onClick={handlePanelShowing} />
-        {s_isPanelShowing && <DataTable />}
-        <Box type="floor" />
+        {/*建築*/}
+        <Box type="wall" position={[10, 30.5, -89.5]} args={[200, 60, 1]} />
+        <Box type="wall" position={[-89.5, 30.5, 10]} args={[1, 60, 200]} />
+        <Box type="floor_1" position={[10, 0, 10]} args={[200, 1, 200]} />
+        {/*3D物件*/}
+        <Reactor position={[-50, -4, -20]} scale={[5.5, 5.5, 5.5]} rotation={[0, Math.PI * 1.5, 0]} onClick={() => handlePanelShowing("reactor")} />
+        <Mixer position={[0, 0.55, -70]} scale={[4, 4, 4]} rotation={[0, -Math.PI / 2, 0]} onClick={() => handlePanelShowing("mixer")} />
+        {/*相機*/}
         <CameraController
           cameraPosition={s_cameraPosition}
           orbitTarget={s_orbitTarget}
           s_islocking={s_islocking}
         />
+        {/*2D介面*/}
+        {s_isShowing_reactor && <DataTable />}
+        {/*坐標軸*/}
+        <primitive object={new THREE.AxesHelper(1000)} />
       </Canvas>
     </div>
   );
