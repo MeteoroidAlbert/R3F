@@ -1,22 +1,24 @@
-import { Canvas, useLoader, useThree, useFrame } from '@react-three/fiber';
-import { Gltf, Html, OrbitControls } from '@react-three/drei';
-import { useEffect, useRef, useState } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { useEffect, useState } from 'react';
 import * as THREE from "three";
-import { Form, Table } from 'antd';
 import Box from './Modal/Box';
-import Reactor from './Modal/Reactor';
+import Reactor1 from './Modal/Reactor1';
+import Reactor2 from './Modal/Reactor2';
 import CameraController from './Modal/CameraController';
 import Mixer from './Modal/Mixer';
-import { DataTable_mixer, DataTable_Reactor } from './Component/DataTable';
+import Pallet from './Modal/Pallet';
+import { DataTableMixer, DataTableReactor } from './Component/DataTable';
+import PalletTruck from './Modal/PalletTruck';
+import CautionTape from './Modal/CautionTape';
 
 
 
 
 
 const positionTarget = {
-  default: [[80, 120, 60], [0, 0, 0]], // 0: cameraPosition, 1: orbitTarget
+  default: [[80, 120, 60], []], // 0: cameraPosition, 1: orbitTarget
   reactor: [[-20, 20, -20], [-50, 20, -20]],
-  mixer: [[10, 5, -50], [10, 5, -70]]
+  mixer: [[60, 5, -50], [60, 5, -70]]
 };
 
 
@@ -60,12 +62,23 @@ export default function ThreeScene() {
         <ambientLight intensity={1.5} />
         <directionalLight position={[10, 100, 10]} />
         {/*建築*/}
-        <Box type="wall_marble" position={[10, 30.5, -89.5]} args={[200, 60, 1]} />
-        <Box type="wall_marble" position={[-89.5, 30.5, 10]} args={[1, 60, 200]} />
+        <Box type="wall_marble" position={[10, 45.5, -89.5]} args={[200, 90, 1]} />
+        <Box type="wall_marble" position={[-89.5, 45.5, 10]} args={[1, 90, 200]} />
         <Box type="floor_1" position={[10, 0, 10]} args={[200, 1, 200]} />
         {/*3D物件*/}
-        <Reactor position={[-50, -4, -20]} scale={[5.5, 5.5, 5.5]} rotation={[0, Math.PI * 1.5, 0]} onClick={() => handlePanelShowing("reactor")} />
-        <Mixer position={[0, 0.55, -70]} scale={[4, 4, 4]} rotation={[0, -Math.PI / 2, 0]} onClick={() => handlePanelShowing("mixer")} />
+        <Reactor1 position={[-50, -6, -20]} scale={[8, 8, 8]} rotation={[0, Math.PI * 1.5, 0]} onClick={() => handlePanelShowing("reactor")} />
+        <Reactor2 position={[0, 28.5, -60]}/>
+        <Reactor2 position={[30, 28.5, -60]}/>
+        <Mixer position={[50, 0.55, -70]} scale={[5.5, 5.5, 5.5]} rotation={[0, -Math.PI / 2, 0]} onClick={() => handlePanelShowing("mixer")} />
+        <Pallet position={[0, 0, 100]} scale={[12, 12, 12]} />
+        <PalletTruck position={[26.5, 0, 50]} scale={[12, 12, 12]} rotation={[0, Math.PI , 0]}/>
+        
+        {/*x軸警示線*/}
+        {Array.from({ length: 22 }).map((x, i) => <CautionTape position={[-90 + 3*i, 1, 43]} rotation={[0, Math.PI/4, 0]}/>)}
+        {Array.from({ length: 28 }).map((x, i) => <CautionTape position={[-24 + 3*i, 1, -50]} rotation={[0, Math.PI/4, 0]}/>)}
+        {/*z軸警示線*/}
+        {Array.from({ length: 31 }).map((x, i) => <CautionTape position={[-24.3, 1, -51 + 3*i]} rotation={[0, -Math.PI/4, 0]}/>)}
+        {Array.from({ length: 13 }).map((x, i) => <CautionTape position={[60, 1, -90 + 3*i]} rotation={[0, -Math.PI/4, 0]}/>)}
         {/*相機*/}
         <CameraController
           cameraPosition={s_cameraPosition}
@@ -73,8 +86,8 @@ export default function ThreeScene() {
           s_islocking={s_islocking}
         />
         {/*2D介面*/}
-        {s_isShowing_reactor && <DataTable_Reactor />}
-        {s_isShowing_mixer && <DataTable_mixer />}
+        {s_isShowing_reactor && <DataTableReactor />}
+        {s_isShowing_mixer && <DataTableMixer />}
         {/*坐標軸*/}
         <primitive object={new THREE.AxesHelper(1000)} />
       </Canvas>

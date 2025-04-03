@@ -1,0 +1,11 @@
+Model Information:
+* title:	Ball valve 3/4" with handle (ASG)
+* source:	https://sketchfab.com/3d-models/ball-valve-34-with-handle-asg-97f02218fc2c4a89a412c2a16325ca65
+* author:	Santehrai (https://sketchfab.com/i04278976)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Ball valve 3/4" with handle (ASG)" (https://sketchfab.com/3d-models/ball-valve-34-with-handle-asg-97f02218fc2c4a89a412c2a16325ca65) by Santehrai (https://sketchfab.com/i04278976) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

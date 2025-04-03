@@ -1,0 +1,11 @@
+Model Information:
+* title:	Pallets and plastic barrels
+* source:	https://sketchfab.com/3d-models/pallets-and-plastic-barrels-69a8bf23d8d841299045bf2f8001cf84
+* author:	HGowl (https://sketchfab.com/hgowl22)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Pallets and plastic barrels" (https://sketchfab.com/3d-models/pallets-and-plastic-barrels-69a8bf23d8d841299045bf2f8001cf84) by HGowl (https://sketchfab.com/hgowl22) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

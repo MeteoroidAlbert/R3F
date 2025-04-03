@@ -1,0 +1,320 @@
+{
+  "accessors": [
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 8683,
+      "max": [
+        173.35499572753906,
+        112.52200317382813,
+        76.19999694824219
+      ],
+      "min": [
+        -2.7229292869676135e-15,
+        -76.19999694824219,
+        -76.19999694824219
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 104196,
+      "componentType": 5126,
+      "count": 8683,
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 208392,
+      "componentType": 5126,
+      "count": 8683,
+      "max": [
+        0.8980392217636108,
+        0.8980392217636108,
+        0.8980392217636108
+      ],
+      "min": [
+        0.529411792755127,
+        0.5490196347236633,
+        0.5490196347236633
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 33063,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 312588,
+      "componentType": 5126,
+      "count": 1560,
+      "max": [
+        173.35499572753906,
+        75.38719940185547,
+        76.19999694824219
+      ],
+      "min": [
+        67.30999755859375,
+        -76.19999694824219,
+        -76.19999694824219
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 331308,
+      "componentType": 5126,
+      "count": 1560,
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -0.9999960064888,
+        -1.0,
+        -0.9999826550483704
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 350028,
+      "componentType": 5126,
+      "count": 1560,
+      "max": [
+        0.8980392217636108,
+        0.8980392217636108,
+        0.8980392217636108
+      ],
+      "min": [
+        0.529411792755127,
+        0.5490196347236633,
+        0.5490196347236633
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 132252,
+      "componentType": 5125,
+      "count": 4731,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 368748,
+      "componentType": 5126,
+      "count": 9401,
+      "max": [
+        137.98870849609375,
+        129.69256591796875,
+        224.7899932861328
+      ],
+      "min": [
+        41.52899932861328,
+        -54.957550048828125,
+        -54.957550048828125
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 481560,
+      "componentType": 5126,
+      "count": 9401,
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 594372,
+      "componentType": 5126,
+      "count": 9401,
+      "max": [
+        0.8980392217636108,
+        0.8980392217636108,
+        0.8980392217636108
+      ],
+      "min": [
+        0.3803921639919281,
+        0.47843137383461,
+        0.5882353186607361
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 151176,
+      "componentType": 5125,
+      "count": 43221,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "MR.AnyCAD (https://sketchfab.com/MRAnyCAD)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/flanged-ball-valve-assembly-2e8aa725a5ee4261a2b0741ee106b134",
+      "title": "Flanged Ball Valve Assembly"
+    },
+    "generator": "Sketchfab-15.53.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 324060,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 707184,
+      "byteOffset": 324060,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 1031244,
+      "uri": "scene.bin"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "Scene_-_Root",
+      "pbrMetallicRoughness": {
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.6
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Object_0",
+      "primitives": [
+        {
+          "attributes": {
+            "COLOR_0": 2,
+            "NORMAL": 1,
+            "POSITION": 0
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Object_1",
+      "primitives": [
+        {
+          "attributes": {
+            "COLOR_0": 6,
+            "NORMAL": 5,
+            "POSITION": 4
+          },
+          "indices": 7,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Object_2",
+      "primitives": [
+        {
+          "attributes": {
+            "COLOR_0": 10,
+            "NORMAL": 9,
+            "POSITION": 8
+          },
+          "indices": 11,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.220446049250313e-16,
+        -1.0,
+        0.0,
+        0.0,
+        1.0,
+        2.220446049250313e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2,
+        3,
+        4
+      ],
+      "name": "Geode"
+    },
+    {
+      "mesh": 0,
+      "name": "Object_2"
+    },
+    {
+      "mesh": 1,
+      "name": "Object_3"
+    },
+    {
+      "mesh": 2,
+      "name": "Object_4"
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ]
+}

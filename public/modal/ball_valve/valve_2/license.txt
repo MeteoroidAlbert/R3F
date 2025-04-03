@@ -1,0 +1,11 @@
+Model Information:
+* title:	Flanged Ball Valve Assembly
+* source:	https://sketchfab.com/3d-models/flanged-ball-valve-assembly-2e8aa725a5ee4261a2b0741ee106b134
+* author:	MR.AnyCAD (https://sketchfab.com/MRAnyCAD)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Flanged Ball Valve Assembly" (https://sketchfab.com/3d-models/flanged-ball-valve-assembly-2e8aa725a5ee4261a2b0741ee106b134) by MR.AnyCAD (https://sketchfab.com/MRAnyCAD) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

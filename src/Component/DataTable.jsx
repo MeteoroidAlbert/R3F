@@ -111,7 +111,7 @@ const fakeData_reactor = [
     }
 ]
 
-export const DataTable_Reactor = () => {
+export const DataTableReactor = () => {
     return (
         <Html position={[-40, 25, -20]} rotation={[0, Math.PI / 2, 0]} transform occlude>
             <div className="bg-white p-2  overflow-x-auto">
@@ -159,9 +159,9 @@ const fakeData_mixer = [
     }
 ]
 
-export const DataTable_mixer = () => {
+export const DataTableMixer = () => {
     return (
-        <Html position={[16, 4, -60]} rotation={[0, 0, 0]} transform occlude>
+        <Html position={[66, 4, -60]} rotation={[0, 0, 0]} transform occlude>
             <div className="bg-white p-2  overflow-x-auto">
                 <Table columns={tableColumns_mixer} dataSource={fakeData_mixer} />
             </div>
