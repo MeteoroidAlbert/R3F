@@ -1,7 +1,7 @@
 import { OrbitControls } from '@react-three/drei';
 import { useThree, useFrame } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
-export default function CameraController({ cameraPosition, orbitTarget, s_islocking }) {
+export default function ThirdPersonController({ cameraPosition, orbitTarget, s_islocking }) {
     const { camera } = useThree();
     const orbitControlsRef = useRef();
     const [s_isAnimated, set_s_isAnimated] = useState(false) // 控制是否啟用相機轉移時的動畫
