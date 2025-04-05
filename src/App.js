@@ -60,11 +60,11 @@ export default function ThreeScene() {
     }
   }, [s_islocking, s_selectedObj]);
 
-  useEffect(() => {
-    if (s_comeraType === "first") {
-      document.body.requestPointerLock();
-    }
-  }, [s_comeraType])
+  // useEffect(() => {
+  //   if (s_comeraType === "first") {
+  //     document.body.requestPointerLock();
+  //   }
+  // }, [s_comeraType])
 
   return (
     <div className="relative w-full h-screen bg-black">
