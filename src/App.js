@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber';
-import { useEffect, useState, } from 'react';
+import { useEffect, useRef, useState, } from 'react';
 import * as THREE from "three";
 import { Box, HoleBox } from './Modal/Box';
 import Reactor1 from './Modal/Reactor1';
@@ -14,6 +14,7 @@ import FireExtinguisher from './Modal/FireExtinguisher';
 import Scales from './Modal/Scale';
 import { Button, Space } from 'antd';
 import FirstPersonCameraControls from './Modal/camera/FirstPersonControls';
+import { DragControls } from '@react-three/drei';
 
 
 
@@ -25,8 +26,6 @@ const positionTarget = {
   reactor: [[-20, 20, -20], [-50, 20, -20]],
   mixer: [[60, 5, -50], [60, 5, -70]]
 };
-
-
 
 export default function ThreeScene() {
   const [s_isShowing_reactor, set_s_isShowing_reactor] = useState(false);  // Panel_ractor顯示與否
@@ -60,17 +59,27 @@ export default function ThreeScene() {
     }
   }, [s_islocking, s_selectedObj]);
 
-  // useEffect(() => {
-  //   if (s_comeraType === "first") {
-  //     document.body.requestPointerLock();
-  //   }
-  // }, [s_comeraType])
+  
 
   return (
     <div className="relative w-full h-screen bg-black">
       <Space className="absolute top-0 right-0 z-[100] p-2 bg-white border border-solid rounded-md m-2">
-        <Button onClick={() => set_s_cameraType("first")}>第一人稱</Button>
-        <Button onClick={() => set_s_cameraType("third")}>第三人稱</Button>
+        <Button
+          onClick={() => {
+            set_s_cameraType("first");
+          }}>
+          第一人稱
+        </Button>
+        <Button onClick={() => {
+          set_s_cameraType("third");
+        }}>
+          第三人稱
+        </Button>
+        <Button onClick={() => {
+          set_s_cameraType("drag");
+        }}>
+          拖拽模式
+        </Button>
       </Space>
       <Canvas className="bg-[#b0c4de]">
         {/*光源*/}
@@ -83,13 +92,13 @@ export default function ThreeScene() {
         <Box type="wall_marble" position={[55, 45.5, 35]} args={[15, 90, 15]} />
         {/*3D物件*/}
         <Reactor1 position={[-50, -6, -20]} scale={[8, 8, 8]} rotation={[0, Math.PI * 1.5, 0]} onClick={() => handlePanelShowing("reactor")} />
-        <Reactor2 position={[0, 28.5, -60]} />
-        <Reactor2 position={[30, 28.5, -60]} />
+        <Reactor2 position={[0, 28.5, -60]} s_comeraType={s_comeraType}/>
+        <Reactor2 position={[30, 28.5, -60]} s_comeraType={s_comeraType}/>
         <Mixer position={[50, 0.55, -70]} scale={[5.5, 5.5, 5.5]} rotation={[0, -Math.PI / 2, 0]} onClick={() => handlePanelShowing("mixer")} />
         <Pallet position={[0, 0, 100]} scale={[12, 12, 12]} />
         <PalletTruck position={[26.5, 0, 50]} scale={[12, 12, 12]} rotation={[0, Math.PI, 0]} />
-        <FireExtinguisher position={[65, 5.5, 33]} scale={[5, 5, 5]} rotation={[0, Math.PI / 2, 0]} />
-        <FireExtinguisher position={[65, 5.5, 38]} scale={[5, 5, 5]} rotation={[0, Math.PI / 2, 0]} />
+        <FireExtinguisher position={[65, 5.5, 33]} scale={[5, 5, 5]} rotation={[0, Math.PI / 2, 0]} s_comeraType={s_comeraType}/>
+        <FireExtinguisher position={[65, 5.5, 38]} scale={[5, 5, 5]} rotation={[0, Math.PI / 2, 0]} s_comeraType={s_comeraType}/>
         <Scales position={[55, 2, 18]} scale={[1.5, 1.5, 1.5]} rotation={[0, -Math.PI / 2, 0]} />
 
         {/*x軸警示線*/}
@@ -110,8 +119,9 @@ export default function ThreeScene() {
             s_islocking={s_islocking}
           />
         )}
+        
         {s_comeraType === "first" && (
-          <FirstPersonCameraControls/>
+          <FirstPersonCameraControls />
         )}
         {/*2D介面*/}
         {s_isShowing_reactor && <DataTableReactor />}

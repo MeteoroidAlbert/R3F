@@ -1,13 +1,20 @@
-import { Gltf } from '@react-three/drei';
-export default function FireExtinguisher({ position, scale, rotation }) {
-    return (
+import { DragControls, Gltf } from '@react-three/drei';
+import { useEffect, useRef, useState } from 'react';
+export default function FireExtinguisher({ position, scale, rotation, s_comeraType }) {
+    const content = (
         <Gltf
             src={"/modal/fire_extinguisher/scene.gltf"}
-            position={position} 
+            position={position}
             scale={scale}
             rotation={rotation}
-            // onPointerOver={() => (document.body.style.cursor = "pointer")}
-            // onPointerOut={() => (document.body.style.cursor = "grab")}
         />
     )
+
+    return s_comeraType === "drag" ? (
+        <DragControls dragLimits={[undefined, [0, 0], undefined]}>
+            {content}
+        </DragControls>
+    ) : (
+        content
+    );
 }
