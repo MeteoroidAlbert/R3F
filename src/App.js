@@ -109,6 +109,7 @@ export default function ThreeScene() {
         if (s_isDialogueShowing && s_interactObj === "reactor1" && s_cameraType === "first") {
           console.log("條件滿足")
           set_s_showData(true);
+          set_s_cameraType("other");
         }
         else {
           console.log("條件未滿足:", s_isDialogueShowing, s_interactObj, s_cameraType)
@@ -238,7 +239,8 @@ export default function ThreeScene() {
       )}
       {s_isDialogueShowing && (
         <div className="absolute top-[5%] left-[5%] z-[100] bg-white p-2">
-          F 開啟面板
+          <p>F 開啟面板</p>
+          
         </div>
       )}
       {s_showData && (
