@@ -58,13 +58,15 @@ import { useRef, useEffect } from "react"
 import { useFrame } from "@react-three/fiber"
 import { useKeyboardControls } from "@react-three/drei"
 import { CapsuleCollider, RigidBody } from "@react-three/rapier"
+import { useThreeContext } from "../../Context/threeContext"
 
-const SPEED = 50 // 降低速度以增加穩定性
+const SPEED = 30 // 降低速度以增加穩定性
 const direction = new THREE.Vector3()
 const frontVector = new THREE.Vector3()
 const sideVector = new THREE.Vector3()
 
 export function Player() {
+  const {set_s_isPlayerShowing}= useThreeContext();
   const ref = useRef()
   const [, get] = useKeyboardControls()
 
@@ -75,7 +77,11 @@ export function Player() {
         ref.current.wakeUp() // 每1秒強制喚醒物理體
       }
     }, 1000)
-    return () => clearInterval(interval)
+    set_s_isPlayerShowing(true);
+    return () => {
+      clearInterval(interval)
+      set_s_isPlayerShowing(false);
+    }
   }, [])
 
   useFrame((state) => {
@@ -109,13 +115,13 @@ export function Player() {
     })
 
     // 手動重置異常狀態（防止卡住）
-    if (Math.abs(velocity.x) < 0.01 && Math.abs(velocity.z) < 0.01 && (forward || backward || left || right)) {
-      ref.current.setLinvel({
-        x: direction.x * 2, // 輕微助推
-        y: velocity.y,
-        z: direction.z * 2
-      })
-    }
+    // if (Math.abs(velocity.x) < 0.01 && Math.abs(velocity.z) < 0.01 && (forward || backward || left || right)) {
+    //   ref.current.setLinvel({
+    //     x: direction.x * 2, // 輕微助推
+    //     y: velocity.y,
+    //     z: direction.z * 2
+    //   })
+    // }
   })
 
   return (
@@ -128,6 +134,7 @@ export function Player() {
       enabledRotations={[false, false, false]}
       linearDamping={0.25} // 適當阻尼
       friction={0.1}       // 降低摩擦
+      userData={{ name: "player" }}
     >
       <CapsuleCollider args={[15.88, 0.5]} /> {/* 標準人形尺寸 */}
     </RigidBody>

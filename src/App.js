@@ -13,7 +13,7 @@ import CautionTape from './Modal/CautionTape';
 import FireExtinguisher from './Modal/FireExtinguisher';
 import Scales from './Modal/Scale';
 import { Button, Space, Table } from 'antd';
-import FirstPersonControls  from './Modal/camera/FirstPersonControls';
+import FirstPersonControls from './Modal/camera/FirstPersonControls';
 import { DragControls, KeyboardControls, PointerLockControls } from '@react-three/drei';
 import { useThreeContext } from './Context/threeContext';
 import { Physics } from '@react-three/rapier';
@@ -76,7 +76,8 @@ export default function ThreeScene() {
   const [s_orbitTarget, set_s_orbitTarget] = useState(
     new THREE.Vector3(...positionTarget.default[1])
   );
-  const { s_cameraType, set_s_cameraType } = useThreeContext();              // 相機類型
+  const [s_showData, set_s_showData] = useState(false);
+  const { s_cameraType, set_s_cameraType, s_isDialogueShowing, s_interactObj } = useThreeContext();              // 相機類型
 
 
   const handlePanelShowing = (type) => {
@@ -97,6 +98,35 @@ export default function ThreeScene() {
     }
   }, [s_islocking, s_selectedObj]);
 
+
+  
+
+  useEffect(() => {
+    console.log(s_cameraType, s_interactObj, s_isDialogueShowing);
+    const handleKeyDown = (event) => {
+      if (event.key === "F" || event.key === "f") {
+        console.log("F已被按下")
+        if (s_isDialogueShowing && s_interactObj === "reactor1" && s_cameraType === "first") {
+          console.log("條件滿足")
+          set_s_showData(true);
+        }
+        else {
+          console.log("條件未滿足:", s_isDialogueShowing, s_interactObj, s_cameraType)
+        }
+      }
+      if (!s_interactObj) {
+        set_s_showData(false);
+      }
+    };
+
+    // 添加事件監聽器
+    document.addEventListener('keydown', handleKeyDown);
+
+    // 清理事件監聽器
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [s_cameraType, s_interactObj, s_isDialogueShowing])
 
 
   return (
@@ -146,7 +176,17 @@ export default function ThreeScene() {
               <Box type="floor_1" position={[10, 0, 10]} args={[200, 1, 200]} />
               <Box type="wall_marble" position={[55, 45.5, 35]} args={[15, 90, 15]} />
               {/*3D物件*/}
-              <Reactor1 position={[-50, -6, -20]} scale={[8, 8, 8]} rotation={[0, Math.PI * 1.5, 0]} onClick={() => handlePanelShowing("reactor")} />
+              <Reactor1
+                position={[-50, -6, -20]}
+                scale={[8, 8, 8]}
+                rotation={[0, Math.PI * 1.5, 0]}
+                onClick={() => handlePanelShowing("reactor")}
+                onPlayerApproach={({ distance }) => {
+                  console.log(`玩家接近反应堆，距离：${distance.toFixed(1)}米`)
+                  // 可以在这里触发UI提示、音效等
+                }}
+                detectionDistance={8}
+              />
               <Reactor2 key="reactor2-1" position={[0, 28.5, -60]} />
               <Reactor2 key="reactor2-2" position={[30, 28.5, -60]} />
               <Mixer position={[50, 0.55, -70]} scale={[5.5, 5.5, 5.5]} rotation={[0, -Math.PI / 2, 0]} onClick={() => handlePanelShowing("mixer")} />
@@ -176,7 +216,7 @@ export default function ThreeScene() {
               )}
 
               {s_cameraType === "first" && (
-                  <Player/>
+                <Player />
               )}
               {/*2D介面*/}
               {s_isShowing_reactor && <DataTableReactor />}
@@ -185,12 +225,23 @@ export default function ThreeScene() {
               <primitive object={new THREE.AxesHelper(1000)} />
             </Physics>
             {s_cameraType === "first" && (
-                  <PointerLockControls/>
-              )}
+              <PointerLockControls />
+            )}
           </Suspense>
         </Canvas>
       </KeyboardControls>
+      {/*DOM節點*/}
       {s_isShowing_mixer && (
+        <div className="absolute top-[35%] left-[50%] z-[100] bg-white p-2  overflow-x-auto">
+          <Table columns={tableColumns_mixer} dataSource={fakeData_mixer} />
+        </div>
+      )}
+      {s_isDialogueShowing && (
+        <div className="absolute top-[5%] left-[5%] z-[100] bg-white p-2">
+          F 開啟面板
+        </div>
+      )}
+      {s_showData && (
         <div className="absolute top-[35%] left-[50%] z-[100] bg-white p-2  overflow-x-auto">
           <Table columns={tableColumns_mixer} dataSource={fakeData_mixer} />
         </div>
