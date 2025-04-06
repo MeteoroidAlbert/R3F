@@ -1,15 +1,34 @@
 import { DragControls, Gltf } from '@react-three/drei';
-import { useRef } from 'react';
+import { useThreeContext } from '../Context/threeContext';
+import { RigidBody } from '@react-three/rapier';
 export default function Reactor1({ position, scale, rotation, onClick }) {
-    return (
-        <Gltf
+    const {s_cameraType} = useThreeContext();
 
+    const handleClick = () => {
+        if (s_cameraType !== "third") {
+            return;
+        }
+        else {
+            onClick();
+        }
+    }
+
+    const content = (
+        <RigidBody type="fixed" colliders="trimesh">
+        <Gltf
             src={"/modal/reactor/scene.gltf"}
             position={position} scale={scale}
             rotation={rotation}
-            onClick={onClick}
-            onPointerOver={() => (document.body.style.cursor = "pointer")}
-            onPointerOut={() => (document.body.style.cursor = "grab")}
+            onClick={handleClick}
         />
+        </RigidBody>
     )
+
+    return s_cameraType === "drag" ? (
+        <DragControls dragLimits={[undefined, [0, 0], undefined]}>
+            {content}
+        </DragControls>
+    ) : (
+        content
+    );
 }

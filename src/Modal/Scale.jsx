@@ -1,3 +1,6 @@
+import { DragControls } from "@react-three/drei";
+import { useThreeContext } from "../Context/threeContext";
+
 function Pillar({ position }) {
     return (
         <group position={position}>
@@ -15,6 +18,8 @@ function Pillar({ position }) {
 }
 
 export default function Scales({ position, scale, rotation }) {
+    const {s_cameraType} = useThreeContext();
+
     const pillarPositions = [
         [4, 0, 2.5],
         [4, 0, -2.5],
@@ -22,10 +27,10 @@ export default function Scales({ position, scale, rotation }) {
         [-4, 0, -2.5]
     ]
 
-    return (
+    const content = (
         <group position={position} scale={scale} rotation={rotation}>
             {/*秤頭*/}
-            <mesh position={[5.3, 5.5, 0]} rotation={[0, 0, -Math.PI/8]}>
+            <mesh position={[5.3, 5.5, 0]} rotation={[0, 0, -Math.PI / 8]}>
                 <boxGeometry args={[0.4, 1.2, 3]} />
                 <meshStandardMaterial />
             </mesh>
@@ -53,4 +58,12 @@ export default function Scales({ position, scale, rotation }) {
 
         </group>
     )
+
+    return s_cameraType === "drag" ? (
+        <DragControls dragLimits={[undefined, [0, 0], undefined]}>
+            {content}
+        </DragControls>
+    ) : (
+        content
+    );
 }

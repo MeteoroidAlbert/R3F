@@ -1,13 +1,33 @@
-import { Gltf } from '@react-three/drei';
+import { DragControls, Gltf } from '@react-three/drei';
+import { useThreeContext } from '../Context/threeContext';
 export default function Mixer({ position, scale, rotation, onClick }) {
-    return (
+    const { s_cameraType } = useThreeContext();
+
+    const handleClick = () => {
+        if (s_cameraType !== "third") {
+            return;
+        }
+        else {
+            onClick();
+        }
+    }
+
+    const content = (
         <Gltf
             src={"/modal/mixer/scene.gltf"}
             position={position} scale={scale}
             rotation={rotation}
-            onClick={onClick}
-            onPointerOver={() => (document.body.style.cursor = "pointer")}
-            onPointerOut={() => (document.body.style.cursor = "grab")}
+            onClick={handleClick}
+            // onPointerOver={() => ( s_cameraType === "third" ? document.body.style.cursor = "pointer" : null)}
+            // onPointerOut={() => (document.body.style.cursor = "auto")}
         />
     )
+
+    return s_cameraType === "drag" ? (
+        <DragControls dragLimits={[undefined, [0, 0], undefined]}>
+            {content}
+        </DragControls>
+    ) : (
+        content
+    );
 }

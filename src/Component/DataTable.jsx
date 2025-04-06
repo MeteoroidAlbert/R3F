@@ -113,11 +113,36 @@ const fakeData_reactor = [
 
 export const DataTableReactor = () => {
     return (
-        <Html position={[-40, 25, -20]} rotation={[0, Math.PI / 2, 0]} transform occlude>
-            <div className="bg-white p-2  overflow-x-auto">
+        // <group position={[-20, 25, -20]}>
+        //     <mesh
+        //         position={[-2.5, 0, 0]} // 稍微比 table 前面一點就行
+        //         scale={[1, 1, 1]}
+        //         onClick={(e) => e.stopPropagation()} // 阻止事件繼續傳遞
+        //         rotation={[0, Math.PI/2, 0]}
+        //     >
+        //         <planeGeometry args={[100, 100]}/>
+        //         <meshBasicMaterial  color="black"/>
+        //     </mesh>
+
+        //     <Html  rotation={[0, Math.PI / 2, 0]} transform occlude as="div">
+        //         <div className="bg-white p-2  overflow-x-auto">
+        //             <Table columns={tableColumns_reactor} dataSource={fakeData_reactor} />
+        //         </div>
+        //     </Html>
+        // </group>
+        <Html
+            position={[-20, 25, -20]}
+            rotation={[0, Math.PI / 2, 0]}
+            transform o
+            cclude
+            as="div"
+            style={{ pointerEvents: 'auto' }}
+        >
+            <div className="bg-white p-2  overflow-x-auto" onClick={(e) => e.stopPropagation()}>
                 <Table columns={tableColumns_reactor} dataSource={fakeData_reactor} />
             </div>
         </Html>
+
     )
 }
 

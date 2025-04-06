@@ -2,6 +2,7 @@ import { useLoader } from '@react-three/fiber';
 import * as THREE from "three";
 import { Geometry, Base, Addition, Subtraction, ReverseSubtraction, Intersection, Difference } from '@react-three/csg'
 import Fan from './Fan';
+import { RigidBody } from '@react-three/rapier';
 
 const textures = {
     floor_1: [
@@ -49,6 +50,7 @@ export const Box = ({ type, position, args }) => {
 
 
     return (
+        <RigidBody type="fixed" >
         <mesh position={position} >
             <boxGeometry args={args} />
             <meshStandardMaterial
@@ -61,6 +63,7 @@ export const Box = ({ type, position, args }) => {
                 roughness={type === "floor_1" ? 0.3 : 0.5}            // 控制粗糙度
             />
         </mesh>
+        </RigidBody>
     );
 }
 
