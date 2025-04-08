@@ -28,7 +28,7 @@ const Tape = ({position, type}) => {
             // 1: indices這個array中每個值代表的是一個頂點
             geometry.setIndex(new THREE.BufferAttribute(indices, 1));
 
-            // 创建材质
+            // 創建材质
             const material = new THREE.MeshStandardMaterial({ color: type, side: THREE.DoubleSide });
 
             ref.current.geometry = geometry;

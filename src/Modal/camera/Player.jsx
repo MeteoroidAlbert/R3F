@@ -88,7 +88,7 @@ export function Player() {
     if (!ref.current) return
 
     const { forward, backward, left, right } = get()
-    const velocity = ref.current.linvel()
+    const velocity = ref.current.linvel() //取得該剛體的 線性速度
     const pos = ref.current.translation()
 
     // 正確設置相機位置（Y軸偏移）
@@ -99,15 +99,15 @@ export function Player() {
     )
 
     // 移動方向計算
-    frontVector.set(0, 0, backward - forward)
-    sideVector.set(left - right, 0, 0)
+    frontVector.set(0, 0, backward - forward) // 前後方向向量計算
+    sideVector.set(left - right, 0, 0)        // 左右方向向量計算
     direction
-      .subVectors(frontVector, sideVector)
-      .normalize()
-      .multiplyScalar(SPEED)
-      .applyEuler(state.camera.rotation)
+      .subVectors(frontVector, sideVector) // 將前後方向 (frontVector) 減去左右方向 (sideVector)可得總移動方向
+      .normalize()                       // 把方向向量轉成長度為 1 的單位向量，避免對角線方向比直走快
+      .multiplyScalar(SPEED)             // 將方向向量轉成速度向量: 以「每秒 speed 單位距離」移動
+      .applyEuler(state.camera.rotation) // 把方向向量根據目前鏡頭的旋轉角度（朝向）做旋轉
 
-    // 始終允許移動（無需接地檢測）
+    // 設置物體在 3D 空間中的運動速度
     ref.current.setLinvel({
       x: direction.x,
       y: velocity.y, // 保持原有Y軸速度（重力）
@@ -136,7 +136,7 @@ export function Player() {
       friction={0.1}       // 降低摩擦
       userData={{ name: "player" }}
     >
-      <CapsuleCollider args={[15.88, 0.5]} /> {/* 標準人形尺寸 */}
+      <CapsuleCollider args={[15.88, 0.5]} />
     </RigidBody>
   )
 }
