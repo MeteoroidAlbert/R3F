@@ -51,7 +51,7 @@ export const Box = ({ type, position, args }) => {
 
     return (
         <RigidBody type="fixed" >
-        <mesh position={position} >
+        <mesh position={position} receiveShadow>
             <boxGeometry args={args} />
             <meshStandardMaterial
                 color={color}

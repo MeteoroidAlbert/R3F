@@ -50,7 +50,7 @@ function NewBallValve2({ position, rotation }) {
     )
 }
 
-export default function Reactor2({ position }) {
+export default function Reactor2({ position, defaultClick = true }) {
     const [s_alarm, set_s_alarm] = useState(false);
     const { s_cameraType } = useThreeContext();
 
@@ -68,6 +68,7 @@ export default function Reactor2({ position }) {
     }, [groupRef]);
 
     const handleClick = () => {
+        if (!defaultClick) return;
         if (!groupRef.current) return;
         
         // 遍歷所有子節點
@@ -79,9 +80,12 @@ export default function Reactor2({ position }) {
                     child.material.color.set(0xff4500)
                 
             }
+
+
+            window.open("/details/Reactor2", "_blank")
         });
 
-            
+        
 
         
 
@@ -115,7 +119,7 @@ export default function Reactor2({ position }) {
     
 
     const content = (
-        <group position={position} scale={[1.3, 1.3, 1.3]} ref={groupRef} onClick={handleClick} onDoubleClick={resetColors}>
+        <group position={position} scale={[1.3, 1.3, 1.3]} ref={groupRef} onClick={handleClick} onDoubleClick={resetColors} castShadow>
             
             
             

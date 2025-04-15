@@ -10,6 +10,14 @@ export default function ThirdPersonController({ cameraPosition, orbitTarget, s_i
         set_s_isAnimated(true);
     }, [cameraPosition, orbitTarget]);
 
+    // 強制打斷useFrame的平滑插值動畫(hint: 這樣就可以不必等到鏡頭移回定點就能進行操作)
+    useEffect(() => {
+        const controls = orbitControlsRef.current;
+        const onStart = () => set_s_isAnimated(false);
+        controls?.addEventListener("start", onStart); // Controls事件； start: 交互發生時； end: 交互結束時； change: (?)
+        return () => controls?.removeEventListener("start", onStart);
+    }, []);
+    
 
     useFrame(() => {
         if (!s_isAnimated) return;

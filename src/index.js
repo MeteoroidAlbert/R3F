@@ -4,12 +4,13 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ThreeProvider } from './Context/threeContext';
+import Router from './Routers';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <ThreeProvider>
-      <App />
+      <Router/>
     </ThreeProvider>
   </React.StrictMode>
 );

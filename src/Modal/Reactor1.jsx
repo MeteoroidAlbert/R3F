@@ -60,7 +60,10 @@ export default function Reactor1({
 
 
     const handleClick = () => {
-        if (s_cameraType === "third") onClick()
+        if (s_cameraType === "third") {
+            onClick();
+            
+        } 
     }
 
 
@@ -85,6 +88,7 @@ export default function Reactor1({
                     scale={scale}
 
                     onClick={handleClick}
+                    castShadow
                 />
             </group>
 

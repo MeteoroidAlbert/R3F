@@ -165,12 +165,12 @@ export default function ThreeScene() {
         { name: "right", keys: ["ArrowRight", "d", "D"] },
         { name: "jump", keys: ["Space"] },
       ]}>
-        <Canvas className="bg-[#b0c4de]">
+        <Canvas className="bg-[#b0c4de]" shadows>
           <Suspense>
             <Physics gravity={[0, -30, 0]}>
               {/*光源*/}
               <ambientLight intensity={1.5} />
-              <directionalLight position={[10, 100, 10]} />
+              <directionalLight position={[10, 100, 10]} castShadow/>
               {/*建築*/}
               <Box type="wall_marble" position={[10, 45.5, -89.5]} args={[200, 90, 1]} />
               <HoleBox type="wall_marble" position={[-89.5, 45.5, 10]} args={[1, 90, 200]} />
@@ -183,8 +183,7 @@ export default function ThreeScene() {
                 rotation={[0, Math.PI * 1.5, 0]}
                 onClick={() => handlePanelShowing("reactor")}
                 onPlayerApproach={({ distance }) => {
-                  console.log(`玩家接近反应堆，距离：${distance.toFixed(1)}米`)
-                  // 可以在这里触发UI提示、音效等
+                  console.log(`接近Reactor，距離：${distance.toFixed(1)}公尺`)
                 }}
                 detectionDistance={8}
               />
