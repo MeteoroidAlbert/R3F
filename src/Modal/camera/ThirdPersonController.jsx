@@ -14,10 +14,15 @@ export default function ThirdPersonController({ cameraPosition, orbitTarget, s_i
     useEffect(() => {
         const controls = orbitControlsRef.current;
         const onStart = () => set_s_isAnimated(false);
-        controls?.addEventListener("start", onStart); // Controls事件； start: 交互發生時； end: 交互結束時； change: (?)
+        controls?.addEventListener("start", onStart); // Controls事件； start: 交互發生時； end: 交互結束時； change: 每當OrbitControls做出改變時都會觸發（例如滑動、滾輪縮放、鍵盤縮放）
+
+        camera.near = 0.01;
+        camera.updateProjectionMatrix();
+
+
         return () => controls?.removeEventListener("start", onStart);
     }, []);
-    
+
 
     useFrame(() => {
         if (!s_isAnimated) return;
@@ -34,5 +39,5 @@ export default function ThirdPersonController({ cameraPosition, orbitTarget, s_i
         }
     });
 
-    return <OrbitControls ref={orbitControlsRef} enableRotate={!s_islocking} />;
+    return <OrbitControls ref={orbitControlsRef} enableRotate={!s_islocking} makeDefault/>;
 }

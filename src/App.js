@@ -14,7 +14,7 @@ import FireExtinguisher from './Modal/FireExtinguisher';
 import Scales from './Modal/Scale';
 import { Button, Space, Table } from 'antd';
 import FirstPersonControls from './Modal/camera/FirstPersonControls';
-import { DragControls, KeyboardControls, PointerLockControls } from '@react-three/drei';
+import { DragControls, KeyboardControls, OrbitControls, PointerLockControls, View } from '@react-three/drei';
 import { useThreeContext } from './Context/threeContext';
 import { Physics } from '@react-three/rapier';
 import { Player } from './Modal/camera/Player';
@@ -61,8 +61,8 @@ const fakeData_mixer = [
 
 const positionTarget = {
   default: [[80, 120, 60], []], // 0: cameraPosition, 1: orbitTarget
-  reactor: [[0, 20, -20], [-20, 20, -20]],
-  mixer: [[60, 5, -50], [60, 5, -70]]
+  Reactor1: [[0, 20, -20], [-20, 20, -20]],
+  Mixer: [[60, 5, -50], [60, 5, -70]]
 };
 
 export default function ThreeScene() {
@@ -79,12 +79,13 @@ export default function ThreeScene() {
   const [s_showData, set_s_showData] = useState(false);
   const { s_cameraType, set_s_cameraType, s_isDialogueShowing, s_interactObj } = useThreeContext();              // 相機類型
 
+  const ref = useRef();
 
   const handlePanelShowing = (type) => {
     set_s_islocking(prevState => !prevState);
     set_s_selectedObj(prev => prev === type ? undefined : type);
-    type === "reactor" && set_s_isShowing_reactor(prev => !prev);
-    type === "mixer" && setTimeout(() => set_s_isShowing_mixer(prev => !prev), 500)
+    type === "Reactor1" && set_s_isShowing_reactor(prev => !prev);
+    type === "Mixer" && setTimeout(() => set_s_isShowing_mixer(prev => !prev), 500)
   };
 
   useEffect(() => {
@@ -99,7 +100,7 @@ export default function ThreeScene() {
   }, [s_islocking, s_selectedObj]);
 
 
-  
+
 
   useEffect(() => {
     console.log(s_cameraType, s_interactObj, s_isDialogueShowing);
@@ -158,19 +159,19 @@ export default function ThreeScene() {
           拖拽模式
         </Button>
       </Space>
-      <KeyboardControls map={[
-        { name: "forward", keys: ["ArrowUp", "w", "W"] },
-        { name: "backward", keys: ["ArrowDown", "s", "S"] },
-        { name: "left", keys: ["ArrowLeft", "a", "A"] },
-        { name: "right", keys: ["ArrowRight", "d", "D"] },
-        { name: "jump", keys: ["Space"] },
-      ]}>
-        <Canvas className="bg-[#b0c4de]" shadows>
-          <Suspense>
+      <div ref={ref} className="relative w-full h-screen">
+        <View index={1} className="absolute w-full h-full">
+          <KeyboardControls map={[
+            { name: "forward", keys: ["ArrowUp", "w", "W"] },
+            { name: "backward", keys: ["ArrowDown", "s", "S"] },
+            { name: "left", keys: ["ArrowLeft", "a", "A"] },
+            { name: "right", keys: ["ArrowRight", "d", "D"] },
+            { name: "jump", keys: ["Space"] },
+          ]}>
             <Physics gravity={[0, -30, 0]}>
               {/*光源*/}
               <ambientLight intensity={1.5} />
-              <directionalLight position={[10, 100, 10]} castShadow/>
+              <directionalLight position={[10, 100, 10]} castShadow />
               {/*建築*/}
               <Box type="wall_marble" position={[10, 45.5, -89.5]} args={[200, 90, 1]} />
               <HoleBox type="wall_marble" position={[-89.5, 45.5, 10]} args={[1, 90, 200]} />
@@ -181,7 +182,7 @@ export default function ThreeScene() {
                 position={[-50, -6, -20]}
                 scale={[8, 8, 8]}
                 rotation={[0, Math.PI * 1.5, 0]}
-                onClick={() => handlePanelShowing("reactor")}
+                onClick={() => handlePanelShowing("Reactor1")}
                 onPlayerApproach={({ distance }) => {
                   console.log(`接近Reactor，距離：${distance.toFixed(1)}公尺`)
                 }}
@@ -189,7 +190,7 @@ export default function ThreeScene() {
               />
               <Reactor2 key="reactor2-1" position={[0, 28.5, -60]} />
               <Reactor2 key="reactor2-2" position={[30, 28.5, -60]} />
-              <Mixer position={[50, 0.55, -70]} scale={[5.5, 5.5, 5.5]} rotation={[0, -Math.PI / 2, 0]} onClick={() => handlePanelShowing("mixer")} />
+              <Mixer position={[50, 0.55, -70]} scale={[5.5, 5.5, 5.5]} rotation={[0, -Math.PI / 2, 0]} onClick={() => handlePanelShowing("Mixer")} />
               <Pallet position={[0, 0, 100]} scale={[12, 12, 12]} />
               <PalletTruck position={[26.5, 0, 50]} scale={[12, 12, 12]} rotation={[0, Math.PI, 0]} />
               <FireExtinguisher position={[65, 5.5, 33]} scale={[5, 5, 5]} rotation={[0, Math.PI / 2, 0]} />
@@ -223,13 +224,29 @@ export default function ThreeScene() {
               {/* {s_isShowing_mixer && <DataTableMixer />} */}
               {/*坐標軸*/}
               <primitive object={new THREE.AxesHelper(1000)} />
+              {s_cameraType === "first" && (
+                <PointerLockControls />
+              )}
             </Physics>
-            {s_cameraType === "first" && (
-              <PointerLockControls />
-            )}
-          </Suspense>
+          </KeyboardControls>
+        </View>
+        <View index={2} className="absolute top-0 left-0 w-[600px] h-[600px] ">
+          <color attach="background" args={['#d6edf3']} />
+          <Reactor2 position={[0, 28.5, -60]} />
+          {/*光源*/}
+          <ambientLight intensity={1.5} />
+          <directionalLight position={[10, 100, 10]} castShadow />
+          <OrbitControls makeDefault/>
+        </View>
+
+        <Canvas eventSource={ref} className="bg-[#b0c4de]" shadows>
+
+
+          <View.Port />
+
+
         </Canvas>
-      </KeyboardControls>
+      </div>
       {/*DOM節點*/}
       {s_isShowing_mixer && (
         <div className="absolute top-[35%] left-[50%] z-[100] bg-white p-2  overflow-x-auto">
@@ -239,7 +256,7 @@ export default function ThreeScene() {
       {s_isDialogueShowing && (
         <div className="absolute top-[5%] left-[5%] z-[100] bg-white p-2">
           <p>F 開啟面板</p>
-          
+
         </div>
       )}
       {s_showData && (
