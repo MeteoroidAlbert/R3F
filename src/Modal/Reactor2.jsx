@@ -50,7 +50,7 @@ function NewBallValve2({ position, rotation }) {
     )
 }
 
-export default function Reactor2({ position, defaultClick = true }) {
+export default function Reactor2({ position, onClick, defaultClick = true }) {
     const [s_alarm, set_s_alarm] = useState(false);
     const { s_cameraType } = useThreeContext();
 
@@ -60,7 +60,7 @@ export default function Reactor2({ position, defaultClick = true }) {
     useEffect(() => {
         groupRef.current.traverse((child) => {              // traverse ------------------------------->three.js 中，遍歷Object3D對象的方法
             if (child.isMesh) {
-                // 克隆材质以保存其原始颜色
+                // Clone材質以保存其原色
                 child.material = child.material.clone();
                 originalColors.current.set(child, child.material.color.clone());
             }
@@ -81,8 +81,8 @@ export default function Reactor2({ position, defaultClick = true }) {
                 
             }
 
-
-            window.open("/details/Reactor2", "_blank")
+            onClick && onClick();
+            // window.open("/details/Reactor2", "_blank")
         });
 
         

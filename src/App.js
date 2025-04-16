@@ -14,10 +14,12 @@ import FireExtinguisher from './Modal/FireExtinguisher';
 import Scales from './Modal/Scale';
 import { Button, Space, Table } from 'antd';
 import FirstPersonControls from './Modal/camera/FirstPersonControls';
-import { DragControls, KeyboardControls, OrbitControls, PointerLockControls, View } from '@react-three/drei';
+import { DragControls, KeyboardControls, OrbitControls, PerspectiveCamera, PointerLockControls, View } from '@react-three/drei';
 import { useThreeContext } from './Context/threeContext';
 import { Physics } from '@react-three/rapier';
 import { Player } from './Modal/camera/Player';
+import { componentMap } from './util';
+
 
 const tableColumns_mixer = [
   {
@@ -76,6 +78,9 @@ export default function ThreeScene() {
   const [s_orbitTarget, set_s_orbitTarget] = useState(
     new THREE.Vector3(...positionTarget.default[1])
   );
+  const [Component, setComponent] = useState(undefined);
+
+
   const [s_showData, set_s_showData] = useState(false);
   const { s_cameraType, set_s_cameraType, s_isDialogueShowing, s_interactObj } = useThreeContext();              // 相機類型
 
@@ -128,7 +133,17 @@ export default function ThreeScene() {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [s_cameraType, s_interactObj, s_isDialogueShowing])
+  }, [s_cameraType, s_interactObj, s_isDialogueShowing]);
+
+
+  useEffect(() => {
+    console.log("s_selected:", s_selectedObj);
+    setComponent(() => componentMap[s_selectedObj] || null);
+  }, [s_selectedObj]);
+
+  useEffect(() => {
+    setComponent(undefined)
+  }, [s_cameraType])
 
 
   return (
@@ -188,9 +203,9 @@ export default function ThreeScene() {
                 }}
                 detectionDistance={8}
               />
-              <Reactor2 key="reactor2-1" position={[0, 28.5, -60]} />
-              <Reactor2 key="reactor2-2" position={[30, 28.5, -60]} />
-              <Mixer position={[50, 0.55, -70]} scale={[5.5, 5.5, 5.5]} rotation={[0, -Math.PI / 2, 0]} onClick={() => handlePanelShowing("Mixer")} />
+              <Reactor2 key="reactor2-1" position={[0, 28.5, -60]} onClick={() => set_s_selectedObj("Reactor2")} />
+              <Reactor2 key="reactor2-2" position={[30, 28.5, -60]} onClick={() => set_s_selectedObj("Reactor2")} />
+              <Mixer position={[50, 0.55, -70]} rotation={[0, -Math.PI / 2, 0]} onClick={() => handlePanelShowing("Mixer")} />
               <Pallet position={[0, 0, 100]} scale={[12, 12, 12]} />
               <PalletTruck position={[26.5, 0, 50]} scale={[12, 12, 12]} rotation={[0, Math.PI, 0]} />
               <FireExtinguisher position={[65, 5.5, 33]} scale={[5, 5, 5]} rotation={[0, Math.PI / 2, 0]} />
@@ -217,27 +232,38 @@ export default function ThreeScene() {
               )}
 
               {s_cameraType === "first" && (
-                <Player />
+                <>
+                  <PointerLockControls />
+                  <Player />
+                </>
               )}
+
               {/*2D介面*/}
               {s_isShowing_reactor && <DataTableReactor />}
               {/* {s_isShowing_mixer && <DataTableMixer />} */}
               {/*坐標軸*/}
               <primitive object={new THREE.AxesHelper(1000)} />
-              {s_cameraType === "first" && (
-                <PointerLockControls />
-              )}
+
             </Physics>
           </KeyboardControls>
         </View>
-        <View index={2} className="absolute top-0 left-0 w-[600px] h-[600px] ">
-          <color attach="background" args={['#d6edf3']} />
-          <Reactor2 position={[0, 28.5, -60]} />
-          {/*光源*/}
-          <ambientLight intensity={1.5} />
-          <directionalLight position={[10, 100, 10]} castShadow />
-          <OrbitControls makeDefault/>
-        </View>
+
+        {(Component && s_cameraType === "third") && (
+          <View index={2} className="absolute top-0 left-0 w-[40%] h-full ">
+            <Physics gravity={[0, -30, 0]}>
+              <color attach="background" args={['#d6edf3']} />
+              <Component defaultClick={false} position={[0, 1, 0]} />
+              {/*光源*/}
+              <ambientLight intensity={1.5} />
+              <directionalLight position={[10, 100, 10]} castShadow />
+              <ThirdPersonController
+                cameraPosition={new THREE.Vector3(25, 25, 25)}
+                orbitTarget={new THREE.Vector3(0, 1, 0)}
+              />
+            </Physics>
+          </View>
+        )}
+
 
         <Canvas eventSource={ref} className="bg-[#b0c4de]" shadows>
 

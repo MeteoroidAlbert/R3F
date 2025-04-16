@@ -7,8 +7,9 @@ import { useFrame } from '@react-three/fiber'
 
 export default function Reactor1({
     position,
-    scale,
-    rotation,
+    scale=[3, 3, 3],
+    rotation=[0, Math.PI * 1.5, 0],
+    defaultClick = true,
     onClick,
 }) {
     const { s_cameraType, s_isDialogueShowing, set_s_isDialogueShowing, s_interactObj, set_s_interactObj } = useThreeContext()
@@ -20,7 +21,7 @@ export default function Reactor1({
     const reactorPosition = useMemo(() => new THREE.Vector3(...position), [position]);
 
     // const [lastDistance, setLastDistance] = useState(null);
-    
+
 
     useFrame(() => {
         if (world) {
@@ -38,7 +39,7 @@ export default function Reactor1({
                     const dy = pos.y - reactorPosition.y;
                     const dz = pos.z - reactorPosition.z;
                     const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-                    
+
                     // 優化性能: 避免不必要的重複setState
                     if (lastDistance.current === null || Math.abs(lastDistance.current - distance) > 1) {
                         // setLastDistance(distance); // 更新距離
@@ -56,14 +57,15 @@ export default function Reactor1({
         }
     });
 
-  
+
 
 
     const handleClick = () => {
+        if (!defaultClick) return;
         if (s_cameraType === "third") {
             onClick();
-            
-        } 
+
+        }
     }
 
 
