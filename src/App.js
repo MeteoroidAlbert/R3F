@@ -216,10 +216,6 @@ export default function ThreeScene() {
                 scale={[8, 8, 8]}
                 rotation={[0, Math.PI * 1.5, 0]}
                 onClick={() => handlePanelShowing("Reactor1")}
-                onPlayerApproach={({ distance }) => {
-                  console.log(`接近Reactor，距離：${distance.toFixed(1)}公尺`)
-                }}
-                detectionDistance={8}
               />
               <Reactor2 key="reactor2-1" position={[0, 28.5, -60]} onClick={() => set_s_selectedObj("Reactor2")} />
               <Reactor2 key="reactor2-2" position={[30, 28.5, -60]} onClick={() => set_s_selectedObj("Reactor2")} />
@@ -266,7 +262,7 @@ export default function ThreeScene() {
         </View>
 
         {(Component && s_cameraType === "third") && (
-          <View index={2} className={`absolute top-0 left-0 w-[40%] h-full transition-transform duration-1000 ease-in-out ${s_visible ? "translate-x-0" : "-translate-x-full"}`}>
+          <View index={2} className={`absolute top-0 left-0 w-[40%] h-full transition-transform duration-500 ease-in-out ${s_visible ? "translate-x-0" : "-translate-x-full"}`}>
             
             <Physics gravity={[0, -30, 0]}>
               <color attach="background" args={['#d6edf3']} />
