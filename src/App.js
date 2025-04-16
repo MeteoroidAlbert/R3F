@@ -1,4 +1,4 @@
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { Suspense, useEffect, useRef, useState, } from 'react';
 import * as THREE from "three";
 import { Box, HoleBox } from './Modal/Box';
@@ -12,9 +12,9 @@ import PalletTruck from './Modal/PalletTruck';
 import CautionTape from './Modal/CautionTape';
 import FireExtinguisher from './Modal/FireExtinguisher';
 import Scales from './Modal/Scale';
-import { Button, Space, Table } from 'antd';
+import { Button, Drawer, Space, Table } from 'antd';
 import FirstPersonControls from './Modal/camera/FirstPersonControls';
-import { DragControls, KeyboardControls, OrbitControls, PerspectiveCamera, PointerLockControls, View } from '@react-three/drei';
+import { ContactShadows, DragControls, KeyboardControls, OrbitControls, PerspectiveCamera, PointerLockControls, View } from '@react-three/drei';
 import { useThreeContext } from './Context/threeContext';
 import { Physics } from '@react-three/rapier';
 import { Player } from './Modal/camera/Player';
@@ -78,11 +78,12 @@ export default function ThreeScene() {
   const [s_orbitTarget, set_s_orbitTarget] = useState(
     new THREE.Vector3(...positionTarget.default[1])
   );
+  const [s_visible, set_s_visible] = useState(false);
   const [Component, setComponent] = useState(undefined);
 
 
   const [s_showData, set_s_showData] = useState(false);
-  const { s_cameraType, set_s_cameraType, s_isDialogueShowing, s_interactObj } = useThreeContext();              // 相機類型
+  const { s_cameraType, set_s_cameraType, s_isDialogueShowing, s_interactObj } = useThreeContext();
 
   const ref = useRef();
 
@@ -146,6 +147,20 @@ export default function ThreeScene() {
   }, [s_cameraType])
 
 
+  // 延遲visible = true(hint: 使View可以表現出Drawer行為)
+  useEffect(() => {
+    if (Component && s_cameraType === "third") {
+      setTimeout(() => {
+        set_s_visible(true);
+      }, 100)
+      
+    }
+    else {
+      set_s_visible(false);
+    }
+  }, [Component])
+
+
   return (
     <div className="relative w-full h-screen bg-black">
       <Space className="absolute top-0 right-0 z-[100] p-2 bg-white border border-solid rounded-md m-2">
@@ -186,7 +201,10 @@ export default function ThreeScene() {
             <Physics gravity={[0, -30, 0]}>
               {/*光源*/}
               <ambientLight intensity={1.5} />
-              <directionalLight position={[10, 100, 10]} castShadow />
+              <directionalLight
+                castShadow
+                position={[10, 100, 10]}
+              />
               {/*建築*/}
               <Box type="wall_marble" position={[10, 45.5, -89.5]} args={[200, 90, 1]} />
               <HoleBox type="wall_marble" position={[-89.5, 45.5, 10]} args={[1, 90, 200]} />
@@ -211,7 +229,6 @@ export default function ThreeScene() {
               <FireExtinguisher position={[65, 5.5, 33]} scale={[5, 5, 5]} rotation={[0, Math.PI / 2, 0]} />
               <FireExtinguisher position={[65, 5.5, 38]} scale={[5, 5, 5]} rotation={[0, Math.PI / 2, 0]} />
               <Scales position={[55, 2, 18]} scale={[1.5, 1.5, 1.5]} rotation={[0, -Math.PI / 2, 0]} />
-
               {/*x軸警示線*/}
               {Array.from({ length: 22 }).map((x, i) => <CautionTape position={[-90 + 3 * i, 1, 43]} rotation={[0, Math.PI / 4, 0]} />)}
               {Array.from({ length: 28 }).map((x, i) => <CautionTape position={[-24 + 3 * i, 1, -50]} rotation={[0, Math.PI / 4, 0]} />)}
@@ -249,28 +266,25 @@ export default function ThreeScene() {
         </View>
 
         {(Component && s_cameraType === "third") && (
-          <View index={2} className="absolute top-0 left-0 w-[40%] h-full ">
+          <View index={2} className={`absolute top-0 left-0 w-[40%] h-full transition-transform duration-1000 ease-in-out ${s_visible ? "translate-x-0" : "-translate-x-full"}`}>
+            
             <Physics gravity={[0, -30, 0]}>
               <color attach="background" args={['#d6edf3']} />
               <Component defaultClick={false} position={[0, 1, 0]} />
               {/*光源*/}
               <ambientLight intensity={1.5} />
-              <directionalLight position={[10, 100, 10]} castShadow />
+              <directionalLight position={[10, 100, 10]} />
               <ThirdPersonController
                 cameraPosition={new THREE.Vector3(25, 25, 25)}
                 orbitTarget={new THREE.Vector3(0, 1, 0)}
               />
             </Physics>
+
           </View>
         )}
 
-
         <Canvas eventSource={ref} className="bg-[#b0c4de]" shadows>
-
-
           <View.Port />
-
-
         </Canvas>
       </div>
       {/*DOM節點*/}
@@ -290,6 +304,7 @@ export default function ThreeScene() {
           <Table columns={tableColumns_mixer} dataSource={fakeData_mixer} />
         </div>
       )}
+      
     </div>
   );
 }

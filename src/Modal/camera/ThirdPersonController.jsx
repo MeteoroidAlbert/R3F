@@ -1,7 +1,7 @@
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import { useThree, useFrame } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
-export default function ThirdPersonController({ cameraPosition, orbitTarget, s_islocking }) {
+export default function ThirdPersonController({ cameraPosition, orbitTarget, s_islocking, type }) {
     // const { camera } = useThree();
     const orbitControlsRef = useRef();
     const cameraRef = useRef();
