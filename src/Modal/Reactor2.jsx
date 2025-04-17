@@ -3,7 +3,7 @@ import PressureGauge from "./PressureGauge";
 import { BallValve1, BallValve2 } from "./BallValve";
 import { useEffect, useRef, useState } from "react";
 import { useThreeContext } from "../Context/threeContext";
-import ExcalmationMark from "./ExclamationMark";
+import * as THREE from "three";
 
 
 function Pillar({ position }) {
@@ -33,12 +33,13 @@ function Pillar({ position }) {
     );
 }
 
-function NewBallValve2({ position, rotation }) {
+function NewBallValve2({ position, rotation, clickable_view2 }) {
     return (
         <group position={position} rotation={rotation}>
             <BallValve1
                 scale={[18, 18, 18]}
                 rotation={[-Math.PI / 2, 0, -Math.PI / 2]}
+                clickable_view2={clickable_view2}
             />
             <mesh scale={[1, 1, 1]} position={[0, -0.7, 0]}>
                 <cylinderGeometry
@@ -50,7 +51,7 @@ function NewBallValve2({ position, rotation }) {
     )
 }
 
-export default function Reactor2({ position, onClick, defaultClick = true }) {
+export default function Reactor2({ position, onClick, clickable_view1 = true, clickable_view2 }) {
     const [s_alarm, set_s_alarm] = useState(false);
     const { s_cameraType } = useThreeContext();
 
@@ -68,7 +69,7 @@ export default function Reactor2({ position, onClick, defaultClick = true }) {
     }, [groupRef]);
 
     const handleClick = () => {
-        if (!defaultClick) return;
+        if (!clickable_view1) return;
         if (!groupRef.current) return;
         
         // 遍歷所有子節點
@@ -81,11 +82,11 @@ export default function Reactor2({ position, onClick, defaultClick = true }) {
                 
             }
 
-            onClick && onClick();
+            
             // window.open("/details/Reactor2", "_blank")
         });
 
-        
+        onClick && onClick();
 
         
 
@@ -119,13 +120,12 @@ export default function Reactor2({ position, onClick, defaultClick = true }) {
     
 
     const content = (
-        <group position={position} scale={[1.3, 1.3, 1.3]} ref={groupRef} onClick={handleClick} onDoubleClick={resetColors} castShadow>
-            
-            
-            
+        <group position={position} scale={[1.3, 1.3, 1.3]} ref={groupRef} onClick={handleClick} onDoubleClick={resetColors} castShadow>   
             {/*壓力計*/}
             <PressureGauge
                 position={[3.1, 9, 2.9]}
+                scale={[1, 1, 1]}
+                clickable_view2={clickable_view2}
             />
             <mesh scale={[1, 1, 1]} position={[3, 9, 3]}>
                 <cylinderGeometry
@@ -149,16 +149,16 @@ export default function Reactor2({ position, onClick, defaultClick = true }) {
             </mesh>
             {/*port-ball-valve*/}
             {newBallValve2.map((pos, index) => (
-                <NewBallValve2 key={index} position={pos} />
+                <NewBallValve2 key={index} position={pos} clickable_view2={clickable_view2}/>
             ))}
             {/*反應槽*/}
             <mesh position={[0, -1, 0]}>
                 <cylinderGeometry args={[7, 7, 13, 64, 64]} />
-                <meshStandardMaterial />
+                <meshStandardMaterial side={THREE.DoubleSide}/>
             </mesh>
             <mesh position={[0, 0, 0]}>
                 <cylinderGeometry args={[6, 6, 15, 64, 64]} />
-                <meshStandardMaterial />
+                <meshStandardMaterial side={THREE.DoubleSide}/>
             </mesh>
             <mesh>
                 <sphereGeometry args={[10, 32, 16, 0, Math.PI * 2, 0, 0.7]} />

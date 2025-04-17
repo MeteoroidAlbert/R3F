@@ -1,10 +1,21 @@
 import { Gltf } from '@react-three/drei';
-export default function PressureGauge({ position, scale, rotation, onClick }) {
+import { useThreeContext } from '../Context/threeContext';
+export default function PressureGauge({ position, scale=[2, 2, 2], rotation, clickable_view2 = false }) {
+    const { set_s_selectedObj_view3 } = useThreeContext();
+    
+    const handleClick = () => {
+        if (clickable_view2) {
+            set_s_selectedObj_view3("PressureGauge");
+        }
+    }
+    
     return (
         <Gltf
             src={"/modal/pressure_gauge/scene.gltf"}
-            position={position} scale={scale}
+            position={position} 
+            scale={scale}
             rotation={rotation}
+            onClick={handleClick}
         />
     )
 }

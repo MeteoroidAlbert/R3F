@@ -12,13 +12,13 @@ import PalletTruck from './Modal/PalletTruck';
 import CautionTape from './Modal/CautionTape';
 import FireExtinguisher from './Modal/FireExtinguisher';
 import Scales from './Modal/Scale';
-import { Button, Drawer, Space, Table } from 'antd';
-import FirstPersonControls from './Modal/camera/FirstPersonControls';
-import { ContactShadows, DragControls, KeyboardControls, OrbitControls, PerspectiveCamera, PointerLockControls, View } from '@react-three/drei';
+import { Button, Space, Table } from 'antd';
+import { CloseOutlined } from '@ant-design/icons';
+import { KeyboardControls, PointerLockControls, View } from '@react-three/drei';
 import { useThreeContext } from './Context/threeContext';
 import { Physics } from '@react-three/rapier';
 import { Player } from './Modal/camera/Player';
-import { componentMap } from './util';
+
 
 
 const tableColumns_mixer = [
@@ -71,39 +71,47 @@ export default function ThreeScene() {
   const [s_isShowing_reactor, set_s_isShowing_reactor] = useState(false);  // Panel_ractor顯示與否
   const [s_isShowing_mixer, set_s_isShowing_mixer] = useState(false);      // Panel_mixer顯示與否
   const [s_islocking, set_s_islocking] = useState(false);                  // 視角鎖定與否
-  const [s_selectedObj, set_s_selectedObj] = useState(undefined);          // 黨前選擇的3D物件
   const [s_cameraPosition, set_s_cameraPosition] = useState(               // 相機位置與目標
     new THREE.Vector3(...positionTarget.default[0])
   );
   const [s_orbitTarget, set_s_orbitTarget] = useState(
     new THREE.Vector3(...positionTarget.default[1])
   );
-  const [s_visible, set_s_visible] = useState(false);
-  const [Component, setComponent] = useState(undefined);
+
 
 
   const [s_showData, set_s_showData] = useState(false);
-  const { s_cameraType, set_s_cameraType, s_isDialogueShowing, s_interactObj } = useThreeContext();
+  const {
+    s_cameraType, set_s_cameraType,
+    s_isDialogueShowing, s_interactObj,
+    s_selectedObj_view2, set_s_selectedObj_view2,
+    s_visible_view2, set_s_visible_view2,
+    Component_view2, setComponent_view2,
+    s_selectedObj_view3, set_s_selectedObj_view3,
+    s_visible_view3, set_s_visible_view3,
+    Component_view3, setComponent_view3,
+  } = useThreeContext();
 
   const ref = useRef();
 
   const handlePanelShowing = (type) => {
     set_s_islocking(prevState => !prevState);
-    set_s_selectedObj(prev => prev === type ? undefined : type);
+    set_s_selectedObj_view2(prev => prev === type ? undefined : type);
     type === "Reactor1" && set_s_isShowing_reactor(prev => !prev);
     type === "Mixer" && setTimeout(() => set_s_isShowing_mixer(prev => !prev), 500)
   };
 
+  // 調整相機目標、位置
   useEffect(() => {
-    if (s_islocking && s_selectedObj) {
-      set_s_cameraPosition(new THREE.Vector3(...positionTarget[s_selectedObj][0]));
-      set_s_orbitTarget(new THREE.Vector3(...positionTarget[s_selectedObj][1]));
+    if (s_islocking && s_selectedObj_view2) {
+      set_s_cameraPosition(new THREE.Vector3(...positionTarget[s_selectedObj_view2][0]));
+      set_s_orbitTarget(new THREE.Vector3(...positionTarget[s_selectedObj_view2][1]));
     }
     else {
       set_s_cameraPosition(new THREE.Vector3(...positionTarget.default[0]));
       set_s_orbitTarget(new THREE.Vector3(...positionTarget.default[1]));
     }
-  }, [s_islocking, s_selectedObj]);
+  }, [s_islocking, s_selectedObj_view2]);
 
 
 
@@ -138,27 +146,11 @@ export default function ThreeScene() {
 
 
   useEffect(() => {
-    console.log("s_selected:", s_selectedObj);
-    setComponent(() => componentMap[s_selectedObj] || null);
-  }, [s_selectedObj]);
-
-  useEffect(() => {
-    setComponent(undefined)
+    setComponent_view2(undefined)
   }, [s_cameraType])
 
 
-  // 延遲visible = true(hint: 使View可以表現出Drawer行為)
-  useEffect(() => {
-    if (Component && s_cameraType === "third") {
-      setTimeout(() => {
-        set_s_visible(true);
-      }, 100)
-      
-    }
-    else {
-      set_s_visible(false);
-    }
-  }, [Component])
+
 
 
   return (
@@ -217,8 +209,8 @@ export default function ThreeScene() {
                 rotation={[0, Math.PI * 1.5, 0]}
                 onClick={() => handlePanelShowing("Reactor1")}
               />
-              <Reactor2 key="reactor2-1" position={[0, 28.5, -60]} onClick={() => set_s_selectedObj("Reactor2")} />
-              <Reactor2 key="reactor2-2" position={[30, 28.5, -60]} onClick={() => set_s_selectedObj("Reactor2")} />
+              <Reactor2 key="reactor2-1" position={[0, 28.5, -60]} onClick={() => set_s_selectedObj_view2("Reactor2")} />
+              <Reactor2 key="reactor2-2" position={[30, 28.5, -60]} onClick={() => set_s_selectedObj_view2("Reactor2")} />
               <Mixer position={[50, 0.55, -70]} rotation={[0, -Math.PI / 2, 0]} onClick={() => handlePanelShowing("Mixer")} />
               <Pallet position={[0, 0, 100]} scale={[12, 12, 12]} />
               <PalletTruck position={[26.5, 0, 50]} scale={[12, 12, 12]} rotation={[0, Math.PI, 0]} />
@@ -253,7 +245,7 @@ export default function ThreeScene() {
 
               {/*2D介面*/}
               {s_isShowing_reactor && <DataTableReactor />}
-              {/* {s_isShowing_mixer && <DataTableMixer />} */}
+              {s_isShowing_mixer && <DataTableMixer />}
               {/*坐標軸*/}
               <primitive object={new THREE.AxesHelper(1000)} />
 
@@ -261,13 +253,12 @@ export default function ThreeScene() {
           </KeyboardControls>
         </View>
 
-        {(Component && s_cameraType === "third") && (
-          <View index={2} className={`absolute top-0 left-0 w-[40%] h-full transition-transform duration-500 ease-in-out ${s_visible ? "translate-x-0" : "-translate-x-full"}`}>
-            
+        {(Component_view2 && s_cameraType === "third") && (
+          <View index={2} className={`absolute top-0 left-0 w-[40%] h-full transition-transform duration-500 ease-in-out ${s_visible_view2 ? "translate-x-0" : "-translate-x-full"}`}>
+
             <Physics gravity={[0, -30, 0]}>
               <color attach="background" args={['#d6edf3']} />
-              <Component defaultClick={false} position={[0, 1, 0]} />
-              {/*光源*/}
+              <Component_view2 clickable_view1={false} clickable_view2={true} position={[0, 1, 0]} />
               <ambientLight intensity={1.5} />
               <directionalLight position={[10, 100, 10]} />
               <ThirdPersonController
@@ -279,28 +270,68 @@ export default function ThreeScene() {
           </View>
         )}
 
+        {(Component_view3 && s_cameraType === "third") && (
+          <View index={3} className={`absolute top-16 right-5 w-[40%] h-[40%] transition-transform duration-500 ease-in-out ${s_visible_view3 ? "translate-y-0" : "-translate-y-full"}`}>
+
+            <Physics gravity={[0, -30, 0]}>
+              <color attach="background" args={['#eef39d']} />
+              <Component_view3 clickable_view1={false} position={[0, -2, 0]} />
+              <ambientLight intensity={1.5} />
+              <directionalLight position={[10, 100, 10]} />
+              <ThirdPersonController
+                cameraPosition={new THREE.Vector3(5, 6, 5)}
+                orbitTarget={new THREE.Vector3(0, 1, 0)}
+              />
+            </Physics>
+
+          </View>
+        )}
+
+
+
         <Canvas eventSource={ref} className="bg-[#b0c4de]" shadows>
           <View.Port />
         </Canvas>
       </div>
       {/*DOM節點*/}
-      {s_isShowing_mixer && (
+      {/* {s_isShowing_mixer && (
         <div className="absolute top-[35%] left-[50%] z-[100] bg-white p-2  overflow-x-auto">
           <Table columns={tableColumns_mixer} dataSource={fakeData_mixer} />
         </div>
-      )}
+      )} */}
       {s_isDialogueShowing && (
         <div className="absolute top-[5%] left-[5%] z-[100] bg-white p-2">
           <p>F 開啟面板</p>
 
         </div>
       )}
-      {s_showData && (
+      {/* {s_showData && (
         <div className="absolute top-[35%] left-[50%] z-[100] bg-white p-2  overflow-x-auto">
           <Table columns={tableColumns_mixer} dataSource={fakeData_mixer} />
         </div>
+      )} */}
+      {s_visible_view2 && (
+        <CloseOutlined
+          className={`absolute top-2 left-2 z-[100] transition-transform duration-1000 ease-in-out ${s_visible_view2 ? "translate-x-0" : "-translate-x-full"}`}
+          onClick={() => {
+            setComponent_view2(undefined);
+            set_s_selectedObj_view2(undefined);
+            set_s_islocking(false);
+            set_s_isShowing_reactor(false);
+            set_s_isShowing_mixer(false);
+          }}
+        />
       )}
-      
+      {s_visible_view3 && (
+        <CloseOutlined
+          className={`absolute top-[72px] right-7 z-[100] transition-transform duration-1000 ease-in-out ${s_visible_view3 ? "translate-y-0" : "-translate-y-full"}`}
+          onClick={() => {
+            setComponent_view3(undefined);
+            set_s_selectedObj_view3(undefined);
+          }}
+        />
+      )}
+
     </div>
   );
 }

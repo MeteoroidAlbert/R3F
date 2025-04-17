@@ -1,27 +1,23 @@
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
+import { OrbitControls, PerspectiveCamera, useKeyboardControls } from '@react-three/drei';
 import { useThree, useFrame } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
+import * as THREE from "three";
 export default function ThirdPersonController({ cameraPosition, orbitTarget, s_islocking, type }) {
     // const { camera } = useThree();
     const orbitControlsRef = useRef();
     const cameraRef = useRef();
     const [s_isAnimated, set_s_isAnimated] = useState(false) // 控制是否啟用相機轉移時的動畫
 
+    
+
+    // 強制打斷useFrame的平滑插值動畫(hint: 這樣就可以不必等到鏡頭移回定點就能進行操作)
+    const cancelAnimate = () => {
+        set_s_isAnimated(false); //orbitControls事件；onStart: 交互發生時； onEnd: 交互結束時； onChange: 每當OrbitControls做出改變時都會觸發（例如滑動、滾輪縮放、鍵盤縮放）
+    }
+
     useEffect(() => {
         set_s_isAnimated(true);
     }, [cameraPosition, orbitTarget]);
-
-    // 強制打斷useFrame的平滑插值動畫(hint: 這樣就可以不必等到鏡頭移回定點就能進行操作)
-    useEffect(() => {
-        const ctrls = orbitControlsRef.current;
-        const onStart = () => {
-            set_s_isAnimated(false);
-        }
-        ctrls?.addEventListener("start", onStart); // Controls事件； start: 交互發生時； end: 交互結束時； change: 每當OrbitControls做出改變時都會觸發（例如滑動、滾輪縮放、鍵盤縮放）
-        
-        return () => ctrls?.removeEventListener("start", onStart);
-    }, [orbitControlsRef.current]);
-
 
     useFrame(() => {
         if (!s_isAnimated) return;
@@ -39,10 +35,11 @@ export default function ThirdPersonController({ cameraPosition, orbitTarget, s_i
         }
     });
 
+
     return (
         <>
             <PerspectiveCamera ref={cameraRef} fov={60} near={0.1} far={1000} makeDefault />
-            <OrbitControls ref={orbitControlsRef} enableRotate={!s_islocking} makeDefault />
+            <OrbitControls ref={orbitControlsRef} onStart={cancelAnimate} enableRotate={!s_islocking} makeDefault />
         </>
 
     )

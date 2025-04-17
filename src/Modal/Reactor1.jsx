@@ -9,7 +9,7 @@ export default function Reactor1({
     position,
     scale=[3, 3, 3],
     rotation=[0, Math.PI * 1.5, 0],
-    defaultClick = true,
+    clickable_view1 = true,
     onClick,
 }) {
     const { s_cameraType, s_isDialogueShowing, set_s_isDialogueShowing, s_interactObj, set_s_interactObj } = useThreeContext()
@@ -61,7 +61,7 @@ export default function Reactor1({
 
 
     const handleClick = () => {
-        if (!defaultClick) return;
+        if (!clickable_view1) return;
         if (s_cameraType === "third") {
             onClick();
 
