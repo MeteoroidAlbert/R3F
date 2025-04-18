@@ -78,9 +78,9 @@ export default function ThreeScene() {
     new THREE.Vector3(...positionTarget.default[1])
   );
 
-
-
   const [s_showData, set_s_showData] = useState(false);
+  const [s_data, set_s_data] = useState(undefined);  // 存取後端資料
+
   const {
     s_cameraType, set_s_cameraType,
     s_isDialogueShowing, s_interactObj,
@@ -92,7 +92,41 @@ export default function ThreeScene() {
     Component_view3, setComponent_view3,
   } = useThreeContext();
 
+
+
   const ref = useRef();
+  const ws = useRef(null);
+  let wsURL = "ws://localhost:5000";
+
+  const connectToWs = () => {
+    if (ws.current && (ws.current.readyState === WebSocket.OPEN || ws.current.readyState === WebSocket.CONNECTING)) {
+      console.log("WebSocket is already connected or connecting.");
+      return;
+    };
+
+    if (!ws.current || ws.current.readyState === WebSocket.CLOSED) {
+      ws.current = new WebSocket(wsURL);   //與目的地建立websocket連線
+
+      ws.current.addEventListener("message", handleMessage);   //監聽對象:ws (即與url指向的伺服器的websocket連線);監聽事件:伺服器向客戶端發送message
+      ws.current.addEventListener("close", () => {
+        setTimeout(() => {
+          console.log('Disconnected. Trying to reconnect.');
+          connectToWs();
+        }, 1000);
+      });
+    }
+  }
+
+  const handleMessage = (e) => {
+    const messageData = JSON.parse(e.data);
+    console.log({ e, messageData });
+
+    if (messageData.type === "test") {
+      set_s_data(messageData.value);
+    }
+  }
+
+  
 
 
   const handlePanelShowing = (type) => {
@@ -103,6 +137,9 @@ export default function ThreeScene() {
   };
 
 
+  useEffect(() => {
+    connectToWs();
+  }, [])
 
   // 調整相機目標、位置
   useEffect(() => {
@@ -212,8 +249,8 @@ export default function ThreeScene() {
                 rotation={[0, Math.PI * 1.5, 0]}
                 onClick={() => handlePanelShowing("Reactor1")}
               />
-              <Reactor2 key="reactor2-1" position={[0, 28.5, -60]} onClick={() => set_s_selectedObj_view2("Reactor2")} />
-              <Reactor2 key="reactor2-2" position={[30, 28.5, -60]} onClick={() => set_s_selectedObj_view2("Reactor2")} />
+              <Reactor2 key="reactor2-1" position={[0, 28.5, -60]} onClick={() => set_s_selectedObj_view2("Reactor2")} s_data={s_data}/>
+              <Reactor2 key="reactor2-2" position={[30, 28.5, -60]} onClick={() => set_s_selectedObj_view2("Reactor2")} s_data={s_data}/>
               <Mixer position={[50, 0.55, -70]} rotation={[0, -Math.PI / 2, 0]} onClick={() => handlePanelShowing("Mixer")} />
               <Pallet position={[0, 0, 100]} scale={[12, 12, 12]} />
               <PalletTruck position={[26.5, 0, 50]} scale={[12, 12, 12]} rotation={[0, Math.PI, 0]} />
@@ -253,8 +290,8 @@ export default function ThreeScene() {
               {/*坐標軸*/}
               <primitive object={new THREE.AxesHelper(1000)} />
               <GizmoHelper
-                alignment="bottom-right" // 或 top-right / bottom-left / top-left
-                margin={[80, 80]} // 畫面邊緣的距離
+                alignment="bottom-right" // 在畫布上的位置
+                margin={[80, 80]} // 距離畫布邊緣
               >
                 <GizmoViewport
                   axisColors={['red', 'green', 'blue']}
@@ -270,7 +307,7 @@ export default function ThreeScene() {
 
             <Physics gravity={[0, -30, 0]}>
               <color attach="background" args={['#d6edf3']} />
-              <Component_view2 clickable_view1={false} clickable_view2={true} position={[0, 0, 0]} />
+              <Component_view2 clickable_view1={false} clickable_view2={true} position={[0, 0, 0]} s_data={s_data} />
               <ambientLight intensity={1.5} />
               <directionalLight position={[10, 100, 10]} />
               <ThirdPersonController
