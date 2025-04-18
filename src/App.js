@@ -1,4 +1,4 @@
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Suspense, useEffect, useRef, useState, } from 'react';
 import * as THREE from "three";
 import { Box, HoleBox } from './Modal/Box';
@@ -14,7 +14,7 @@ import FireExtinguisher from './Modal/FireExtinguisher';
 import Scales from './Modal/Scale';
 import { Button, Space, Table } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
-import { KeyboardControls, PointerLockControls, View } from '@react-three/drei';
+import { GizmoHelper, GizmoViewport, KeyboardControls, PointerLockControls, View } from '@react-three/drei';
 import { useThreeContext } from './Context/threeContext';
 import { Physics } from '@react-three/rapier';
 import { Player } from './Modal/camera/Player';
@@ -94,12 +94,15 @@ export default function ThreeScene() {
 
   const ref = useRef();
 
+
   const handlePanelShowing = (type) => {
     set_s_islocking(prevState => !prevState);
     set_s_selectedObj_view2(prev => prev === type ? undefined : type);
     type === "Reactor1" && set_s_isShowing_reactor(prev => !prev);
     type === "Mixer" && setTimeout(() => set_s_isShowing_mixer(prev => !prev), 500)
   };
+
+
 
   // 調整相機目標、位置
   useEffect(() => {
@@ -182,7 +185,7 @@ export default function ThreeScene() {
         </Button>
       </Space>
       <div ref={ref} className="relative w-full h-screen">
-        <View index={1} className="absolute w-full h-full">
+        <View key="view1" index={1} className="absolute w-full h-full">
           <KeyboardControls map={[
             { name: "forward", keys: ["ArrowUp", "w", "W"] },
             { name: "backward", keys: ["ArrowDown", "s", "S"] },
@@ -233,6 +236,7 @@ export default function ThreeScene() {
                   cameraPosition={s_cameraPosition}
                   orbitTarget={s_orbitTarget}
                   s_islocking={s_islocking}
+                  set_s_orbitTarget={set_s_orbitTarget}
                 />
               )}
 
@@ -248,17 +252,25 @@ export default function ThreeScene() {
               {s_isShowing_mixer && <DataTableMixer />}
               {/*坐標軸*/}
               <primitive object={new THREE.AxesHelper(1000)} />
-
+              <GizmoHelper
+                alignment="bottom-right" // 或 top-right / bottom-left / top-left
+                margin={[80, 80]} // 畫面邊緣的距離
+              >
+                <GizmoViewport
+                  axisColors={['red', 'green', 'blue']}
+                  labelColor="white"
+                />
+              </GizmoHelper>
             </Physics>
           </KeyboardControls>
         </View>
 
         {(Component_view2 && s_cameraType === "third") && (
-          <View index={2} className={`absolute top-0 left-0 w-[40%] h-full transition-transform duration-500 ease-in-out ${s_visible_view2 ? "translate-x-0" : "-translate-x-full"}`}>
+          <View key="view2" index={2} className={`absolute top-0 left-0 w-[40%] h-full transition-transform duration-500 ease-in-out ${s_visible_view2 ? "translate-x-0" : "-translate-x-full"}`}>
 
             <Physics gravity={[0, -30, 0]}>
               <color attach="background" args={['#d6edf3']} />
-              <Component_view2 clickable_view1={false} clickable_view2={true} position={[0, 1, 0]} />
+              <Component_view2 clickable_view1={false} clickable_view2={true} position={[0, 0, 0]} />
               <ambientLight intensity={1.5} />
               <directionalLight position={[10, 100, 10]} />
               <ThirdPersonController
@@ -271,15 +283,15 @@ export default function ThreeScene() {
         )}
 
         {(Component_view3 && s_cameraType === "third") && (
-          <View index={3} className={`absolute top-16 right-5 w-[40%] h-[40%] transition-transform duration-500 ease-in-out ${s_visible_view3 ? "translate-y-0" : "-translate-y-full"}`}>
+          <View key="view3" index={3} className={`absolute top-16 right-5 w-[40%] h-[40%] transition-transform duration-500 ease-in-out ${s_visible_view3 ? "translate-y-0" : "-translate-y-full"}`}>
 
             <Physics gravity={[0, -30, 0]}>
               <color attach="background" args={['#eef39d']} />
-              <Component_view3 clickable_view1={false} position={[0, -2, 0]} />
+              <Component_view3 clickable_view1={false} position={[0, 0, 0]} />
               <ambientLight intensity={1.5} />
               <directionalLight position={[10, 100, 10]} />
               <ThirdPersonController
-                cameraPosition={new THREE.Vector3(5, 6, 5)}
+                cameraPosition={new THREE.Vector3(5, 5, 5)}
                 orbitTarget={new THREE.Vector3(0, 1, 0)}
               />
             </Physics>
